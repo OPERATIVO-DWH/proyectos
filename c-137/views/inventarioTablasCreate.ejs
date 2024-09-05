@@ -1,0 +1,158 @@
+<%- include("template/header") %>
+<%- include("template/navbar") %>
+<%- include("template/aside")%>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">        
+  <%- include('template/breadcrumb', { module: 'NUEVA TABLA', module1: ' INVENTARIO / TABLAS / NUEVA TABLA' }) %>
+
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
+        <% if (alert) { %>
+            <div class="alert alert-danger" role="alert">
+                <%= alertMessage %>
+            </div>
+        <% } %>
+      <!-- Main row -->
+      <div class="card card-info card-outline">                
+        <!-- <div class="card-header">             
+            <div class="mb-3">
+                <h3 class="card-title">ESTA REGISTRANDO | <%= userName %></h3>                
+            </div>           
+        </div> -->
+        <div class="card-body">
+          <form action="/saveTablas" method="POST">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="ruta" class="form-label">TABLA</label>
+                        <input type="text" class="form-control" id="ruta" name="ruta" tabindex="1" required>              
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="mb-3">
+                        <label for="tipo" class="form-label">TIPO TABLA</label>
+                        <!-- <input type="text" class="form-control" id="tipo_reporte" name="tipo_reporte" tabindex="3">  -->
+                        <select class="custom-select rounded-0" style="width: 100%;"  id="tipo" name="tipo" tabindex="2">
+                            <option selected="selected">Tabla</option>
+                            <option>Vista</option>                            
+                            <option>Otro</option>
+                        </select>               
+                    </div>                    
+                </div>           
+            </div>                           
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="id_base_datos" class="form-select">BASE DE DATOS</label>
+                        <select class="custom-select rounded-0" id="id_base_datos" name="id_base_datos" class="form-select" tabindex="3">
+                            <option value="1" selected>ctl</option>
+                            <option value="3">crm02</option>
+                            <option value="4">med</option>
+                            <option value="5">mreg</option>
+                            <option value="6">portability</option>
+                            <option value="7">viva_ingest_prod</option>
+                            <option value="8">crm04core</option>
+                            <option value="9">PR_ACTIVACIONES</option>
+                            <option value="10">PR_AUDITORIA</option>
+                            <option value="11">PR_BENEFICIOS</option>
+                            <option value="12">PR_BIG_DATA</option>
+                            <option value="13">PR_CAMPAIGN_MANAGER</option>
+                            <option value="14">PR_CATALOGO</option>
+                            <option value="15">PR_CLASS_EQUIPOS</option>
+                            <option value="16">PR_CLIENTES</option>
+                            <option value="17">PR_CONFIG</option>
+                            <option value="18">PR_CONTACTABILIDAD</option>
+                            <option value="19">PR_CONTACTOS</option>
+                            <option value="20">PR_DATOS</option>
+                            <option value="21">PR_DB_MON</option>
+                            <option value="22">PR_DETALLE_LLAMADAS</option>
+                            <option value="23">PR_DISTRIBUCION</option>
+                            <option value="24">PR_DPI</option>
+                            <option value="25">PR_EPM</option>
+                            <option value="26">PR_FACTURACION</option>
+                            <option value="27">PR_INS_MKT</option>
+                            <option value="28">PR_INVENTARIOS</option>
+                            <option value="29">PR_IX_VOZ</option>
+                            <option value="30">PR_LTE</option>
+                            <option value="31">PR_MINING</option>
+                            <option value="32">PR_MODELO_CELULAR</option>
+                            <option value="33">PR_MONITOREO</option>
+                            <option value="34">PR_MTR</option>
+                            <option value="35">PR_ODS</option>
+                            <option value="36">PR_POSTVENTA</option>
+                            <option value="37">PR_PRE_FACTURACION</option>
+                            <option value="38">PR_RECARGAS</option>
+                            <option value="39">PR_RECLAMOS</option>
+                            <option value="40">PR_REP_APOYO_MKT</option>
+                            <option value="41">PR_REP_CAMPAIGN</option>
+                            <option value="42">PR_REP_CIERRE</option>
+                            <option value="43">PR_REP_OPERATIVOS</option>
+                            <option value="44">PR_REQUERIMIENTO</option>
+                            <option value="45">PR_SDP</option>
+                            <option value="46">PR_SEGMENTACION</option>
+                            <option value="47">PR_SERVICIOS</option>
+                            <option value="48">PR_SMS_IX</option>
+                            <option value="49">PR_SSFF</option>
+                            <option value="50">PR_SUS_CHURN_WMX</option>
+                            <option value="51">PR_SUS_CHURN_POS</option>
+                            <option value="52">PR_SUS_CHURN_PRE</option>
+                            <option value="53">PR_SUS_CHURN_TLP</option>
+                            <option value="54">PR_SUSCRIPTORES</option>
+                            <option value="55">PR_SUSCRIPTORES_CHURN</option>
+                            <option value="56">PR_SUSCRIPTORES_VPN</option>
+                            <option value="57">PR_TICKET</option>
+                            <option value="58">PR_TRAFICO</option>
+                            <option value="59">PR_USSD</option>
+                            <option value="60">PR_VIVA_APP</option>
+                            <option value="61">QA_AUDITORIA</option>
+                            <option value="62">QA_MINING</option>
+                            <option value="63">QA_REP_APOPY_MKT</option>
+                            <option value="64">QA_SMS_IX</option>
+                            <option value="65">DW_ODS</option>
+                            <option value="66">DW_STAGE</option>
+                            <option value="67">DW</option>
+                            <option value="68">viva_analitycs_prod</option>
+                            <option value="69">bunta</option>
+                            
+                        </select>
+                      </div>
+                </div>
+                <div class="col-md-2">
+                    <!-- <div class="mb-3">
+                        <label for="producto" class="form-select">PRODUCTO</label>
+                        <select class="custom-select rounded-0" id="producto" name="producto" class="form-select" tabindex="8">
+                          <option value="Prepago" selected>Prepago</option>
+                          <option value="Postpago">Postpago</option>
+                        </select>
+                    </div> -->
+                </div>
+                <div class="col-md-6">
+                    <!-- <div class="mb-3">
+                        <label for="URL" class="form-label">RUTA</label>
+                        <input type="text" class="form-control" id="URL" name="URL" tabindex="9" required>
+                    </div> -->
+                </div>
+            </div>                
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="usuario" class="form-select">REGISTRADO POR</label>
+                        <select class="custom-select rounded-0"  id="usuario" name="usuario" class="form-select">
+                          <option value="<%= userName %>" selected><%= userName %></option>                          
+                        </select>
+                    </div>                    
+                </div>
+            </div>                         
+            <button type="submit" class="btn btn-primary" tabindex="4">GUARDAR</button>
+            <a href="/inventarioTablas" class="btn btn-secondary">CANCELAR</a>
+          </form>            
+        </div><!-- /.card-body -->
+      </div>
+      <!-- /.row (main row) -->
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+<%- include("template/footer") %>

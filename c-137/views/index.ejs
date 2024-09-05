@@ -1,0 +1,68 @@
+<%- include("template/header")%>
+<%- include("template/navbar")%>
+<%- include("template/aside")%>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <%- include('template/breadcrumb', { module: 'BIENVENIDO', module1: ' ' }) %> 
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
+      <!-- Main row -->
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card card-primary card-outline">
+            <div class="card-body box-profile">
+              <h3 class="profile-username text-center"><%= userName %></h3>
+              <div class="text-center">
+                <img class=""
+                     src="./../img/viva1.png"
+                     alt=""
+                     width="60" height="16" style="opacity: .8">
+              </div> 
+              <p></p>          
+              <ul class="list-group list-group-unbordered mb-3">
+                <li class="list-group-item">
+                  <p class="text-muted">Esto es para los locos, los inadaptados, los rebeldes, los alborotadores, aquellos que no encajan, los que vean las cosas diferente. Para los que no les gustan las reglas y no respetan el status quo. Los puedes citar, no estar de acuerdo con ellos, glorificarlos o insultarlos. Pero lo único que no puedes hacer es ignorarlos. Porque cambian las cosas. Empujan a la raza humana hacia adelante. Mientras algunos los ven como locos, nosotros vemos a genios. Porque las personas que son tan locas y creen que pueden cambiar al mundo son las que lo hacen.</p>                  
+                  <a href="#">Steve Jobs.</a>                  
+                </li>                
+              </ul>              
+            </div>
+            <!-- /.card-body -->
+          </div>
+        </div> 
+        <div class="col-12 col-md-8 col-lg-8 order-2 order-md-1">
+          <div class="row">
+            <div class="col-12 col-sm-4">
+              <div class="info-box bg-light">
+                <div class="info-box-content">
+                  <span class="info-box-text text-center text-muted">Estimated budget</span>
+                  <span class="info-box-number text-center text-muted mb-0">2300</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-sm-4">
+              <div class="info-box bg-light">
+                <div class="info-box-content">
+                  <span class="info-box-text text-center text-muted">Total amount spent</span>
+                  <span class="info-box-number text-center text-muted mb-0">2000</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-sm-4">
+              <div class="info-box bg-light">
+                <div class="info-box-content">
+                  <span class="info-box-text text-center text-muted">Estimated project duration</span>
+                  <span class="info-box-number text-center text-muted mb-0">20</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>                   
+      </div>
+      <!-- /.row (main row) -->
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+<%- include("template/footer") %>

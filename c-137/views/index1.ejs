@@ -1,0 +1,65 @@
+  <%- include("template/header") %>
+  <%- include("template/navbar") %>
+  <%- include("template/aside") %>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">USUARIOS</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Main row -->
+        <div class="row">
+            <div class="container">
+                <a href="/create" class="btn btn-primary mt-4 mb-2">NUEVO <i class="fa-solid fa-square-plus"></i></a>
+                <table id="example1" class="table table-striped mt-4">
+                    <thead class="table-dark">
+                      <tr>
+                        <th scope="col">#ID</th>
+                        <th scope="col">NAME</th>
+                        <th scope="col">EMAIL</th>
+                        <th scope="col">ROL</th>
+                        <th scope="col">Action</th>            
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <% results.forEach ((user) => { %>                
+                            <tr>
+                                <td><%= user.id %></td>
+                                <td><%= user.name %></td>
+                                <td><%= user.email %></td>
+                                <td><%= user.rol %></td>
+                                <td>
+                                    <a href="/edit/<%= user.id %>"class="btn btn-primary">EDITAR <i class="fa-solid fa-pen-to-square"></i></a>
+                                    <!-- <a href="/delete/<%= user.id %>" onclick="return confirm('ESTA SEGURO DE ELIMINAR EL REGISTRO');" class="btn btn-danger">BORRAR</a> -->
+                                    <!-- para hacer el borrado con sweetalert2 https://sweetalert2.github.io/#handling-buttons-->
+                                    <!-- <a onclick="confirmation(<%= user.id %>);" class="btn btn-danger">BORRAR</a> -->
+                                    <a onclick="confirmation('<%= user.id %>');" class="btn btn-danger">BORRAR <i class="fa-solid fa-trash-can"></i></a>
+                                </td>
+                            </tr> 
+                        <% }) %>             
+                    </tbody>
+                </table>
+            </div>              
+        </div>
+        <!-- /.row (main row) -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+  <%- include("template/footer") %>

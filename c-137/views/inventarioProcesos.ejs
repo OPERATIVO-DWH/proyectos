@@ -1,0 +1,65 @@
+<%- include("template/header")%>
+<%- include("template/navbar")%>
+<%- include("template/aside") %>
+<!-- Content Wrapper. Contains page content -->
+
+<div class="content-wrapper"> 
+  <%- include('template/breadcrumb', { module: 'PROCESOS', module1: 'INVENTARIO / PROCESOS' }) %>
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card card-info card-outline">
+            <!-- <div class="card-header">
+              <h3 class="card-title">Icons</h3>
+            </div> /.card-body -->
+            <div class="card-body">
+              <a href="/inventarioProcesosCreate" class="btn btn-primary mt-4 mb-2">NUEVO <i class="fa-solid fa-square-plus"></i></a>
+              <table id="example1" class="table table-striped mt-4 table-responsive">
+                <thead class="table-dark">
+                  <tr>
+                    <th scope="col">#ID</th>                
+                    <th scope="col">PROCESO</th>
+                    <th scope="col">RUTA</th>
+                    <th scope="col">TIPO</th>
+                    <th scope="col">ESTADO</th>
+                    <th scope="col">PROPIETARIO</th>
+                    <th scope="col">SERVIDOR</th>
+                    <th scope="col">TECNOLOGIA</th>
+                    <th scope="col">ACCIONES</th>            
+                  </tr>
+                </thead>
+                <tbody>
+                    <% results.forEach ((user) => { %>
+                        <tr>
+                          <td><%= user.id_proceso %></td>                      
+                          <td><%= user.nombre %></td>
+                          <td><%= user.ruta_proceso %></td>
+                          <td><%= user.tipo %></td>
+                          <td><%= user.estado %></td>
+                          <td><%= user.propietario %></td>
+                          <td><%= user.nombre_servidor %></td>
+                          <td><%= user.tecnologia %></td>
+                          <td>
+                          <a href="/inventarioProcesosEdit/<%= user.id_proceso %>"class="btn btn-primary"><i class="fa-solid fa-pen-to-square"></i></a>
+                          <!-- <a href="/deleteRepo/<%= user.id_reporte %>" onclick="return confirm('ESTA SEGURO DE ELIMINAR EL REGISTRO?');" class="btn btn-danger"><i class="fa-solid fa-trash-can"></i></a> -->
+                          <!-- para hacer el borrado con sweetalert2 https://sweetalert2.github.io/#handling-buttons-->
+                          <!-- <a onclick="confirmation(<%= user.id %>);" class="btn btn-danger">BORRAR</a> -->
+                          <a onclick="confirmationProceso('<%= user.id_proceso %>');" class="btn btn-danger"><i class="fa-solid fa-trash-can"></i></a>
+                          </td>
+                        </tr> 
+                    <% }) %>             
+                </tbody>
+            </table>            
+            </div><!-- /.card-body -->
+          </div>
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+
+  </section>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+<%- include("template/footer") %>

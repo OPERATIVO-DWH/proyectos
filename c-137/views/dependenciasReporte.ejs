@@ -1,0 +1,251 @@
+<%- include("template/header") %>
+<%- include("template/navbar") %>
+<%- include("template/aside")%>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">        
+  <%- include('template/breadcrumb', { module: 'INFORMACION DE DEPENDENCIAS', module1: ' INVENTARIO / INFORMACION DE DEPENDENCIAS' }) %>
+
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12">
+            <!-- <div class="callout callout-info" style="font-size: 0.75rem;"> -->
+            <div class="callout callout-info">  
+              <div class="card-body">
+                <dl class="row">
+                  <dt class="col-sm-4">REPORTE</dt>
+                  <dd class="col-sm-8"><%= user.nombre_reporte %></dd>
+
+                  <dt class="col-sm-4">ESTADO REPORTE</dt>
+                  <dd class="col-sm-8"><%= user.estado_reporte %></dd>
+
+                  <dt class="col-sm-4">CODIGO REPORTE</dt>
+                  <dd class="col-sm-8"><%= user.cd_reporte %></dd>
+
+                  <dt class="col-sm-4">TIPO REPORTE</dt>
+                  <dd class="col-sm-8"><%= user.tipo_reporte %></dd>
+
+                  <dt class="col-sm-4">FRECUENCIA</dt>
+                  <dd class="col-sm-8"><%= user.frecuencia %></dd>
+
+                  <dt class="col-sm-4">REPOSITORIO</dt>
+                  <dd class="col-sm-8"><%= user.repositorio %></dd>
+
+                  <dt class="col-sm-4">RESPONSABLE</dt>
+                  <dd class="col-sm-8"><%= user.responsable %></dd>
+
+                  <dt class="col-sm-4">AREA</dt>
+                  <dd class="col-sm-8"><%= user.area %></dd>
+
+                  <dt class="col-sm-4">PRODUCTO</dt>
+                  <dd class="col-sm-8"><%= user.producto %></dd>
+
+                  <dt class="col-sm-4">RUTA</dt>
+                  <dd class="col-sm-8"><%= user.URL %></dd>
+
+                  <dt class="col-sm-4">HORA EJECUCION</dt>
+                  <dd class="col-sm-8"><%= user.hora_ejecucion %></dd>
+                  
+                </dl>
+              </div>                     
+                <!-- /.card-body -->
+            </div>                
+          </div>    
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                  <div class="card-header p-2">
+                    <ul class="nav nav-pills">
+                      <!-- <li class="nav-item"><a class="nav-link active" href="#reportes" data-toggle="tab">Reportes</a></li> -->
+                      <li class="nav-item"><a class="nav-link active" href="#tablas" data-toggle="tab">Tablas</a></li>
+                      <li class="nav-item"><a class="nav-link" href="#procesos" data-toggle="tab">Procesos</a></li>
+                      <li class="nav-item"><a class="nav-link" href="#dependencias" data-toggle="tab">Diagrama de Dependencias</a></li>
+                    </ul>
+                  </div><!-- /.card-header -->
+                  <div class="card-body">
+                    <div class="tab-content">
+                      <!-- <div class="active tab-pane" id="reportes">                          
+                        
+                      </div> -->
+                      <!-- /.tab-pane -->
+
+                      <div class="active tab-pane" id="tablas">   
+                        <div class="row">
+                          <div class="col-md-12">                           
+                            <div class="card card-info">
+                              <div class="card-header">
+                                <h3 class="card-title">PADRE</h3>
+                              </div>
+                              <div class="card-body">
+                                <div class="row">
+                                  <div class="col-md-7">
+                                    <div class="mb-3">
+                                      <table id="example3" class="table table-striped mt-4 table-responsive">
+                                        <thead class="table-dark">
+                                          <tr>
+                                            <th scope="col">#ID</th>
+                                            <!-- <th scope="col">#ID</th>                                           -->
+                                            <th scope="col">TIPO</th>
+                                            <th scope="col">NOMBRE</th>
+                                            <th scope="col">ACCIONES</th>                                                     
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          <% objetos.forEach(function(objeto) { %>
+                                          <tr>
+                                            <td><%= objeto.id %></td>
+                                            <td><%= objeto.padre_tipo %></td>
+                                            <td><%= objeto.label %></td>
+                                            <td>
+                                              <a href="/dependenciasReporte/<%= objeto.id_objeto %>"class="btn btn-secondary"><i class="fa-solid fa-link" data-toggle="tooltip" title="DEPENDENCIAS"></i></a>
+                                              <a onclick="confirmationTablaDepenPadre('<%= objeto.id_reporte_objeto %>', '<%= objeto.id_reporte %>');" class="btn btn-danger"><i class="fa-solid fa-trash-can" data-toggle="tooltip" title="BORRAR"></i></a>
+                                            </td>
+                                          </tr>  
+                                          <% }); %>                                                                                               
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  </div>
+                                  <div class="col-md-5">
+                                    <!-- Box Comment -->
+                                    <div class="card card-widget">
+                                      <div class="card-header">
+                                        <div class="user-block">                                          
+                                          <span><a href="#">FLUJO DE DEPENDENCIAS</a></span>
+                                          <!-- <span class="description">Shared publicly - 7:30 PM Today</span> -->
+                                        </div>
+                                        <!-- /.user-block -->
+                                        <div class="card-tools">                                          
+                                          <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                          </button>
+                                          <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                            <i class="fas fa-times"></i>
+                                          </button>
+                                        </div>
+                                        <!-- /.card-tools -->
+                                      </div>
+                                      <!-- /.card-header -->
+                                      <div class="card-body">
+                                        <!-- post text -->
+                                        <p>Far far away, behind the word mountains, far from the
+                                          countries Vokalia and Consonantia, there live the blind
+                                          texts. Separated they live in Bookmarksgrove right at</p>
+                        
+                                        <p>the coast of the Semantics, a large language ocean.
+                                          A small river named Duden flows by their place and supplies
+                                          it with the necessary regelialia. It is a paradisematic
+                                          country, in which roasted parts of sentences fly into
+                                          your mouth.</p>
+                                      </div>                                      
+                                    </div>
+                                    <!-- /.card -->
+                                  </div>
+                                </div>  
+                                <div class="row">
+                                  <div class="col-md-12">
+                                    <form action="/saveTablaDepenPadre" method="POST">
+                                      <div class="row">
+                                        <div class="col-md-12">
+                                          <div class="card card-info collapsed-card">
+                                            <div class="card-header d-flex align-items-center">
+                                              <button type="button" class="btn btn-tool me-2" data-card-widget="collapse">
+                                                  <i class="fas fa-plus"></i>
+                                              </button>
+                                              <h3 class="card-title mb-0">SELECCIONA DEPENDENCIA PADRE</h3>
+                                            </div>                              
+                                            <!-- /.card-header -->
+                                            <div class="card-body">
+                                              <div class="row">
+                                                <div class="col-12">
+                                                  <div class="form-group">
+                                                    <div class="row">                                          
+                                                      <div class="col-md-2">
+                                                        <div class="mb-3">
+                                                          <label for="id_reporte" class="form-select">ID REPORTE</label>
+                                                          <select class="custom-select rounded-0"  id="id_reporte" name="id_reporte" class="form-select" tabindex="1" required>
+                                                            <option value="<%= user.id_reporte %>" selected><%= user.id_reporte %></option>                          
+                                                          </select>
+                                                        </div> 
+                                                      </div>
+                                                      <div class="col-md-6">
+                                                        
+                                                      </div>
+                                                      <div class="col-md-4">
+                                                        <div class="mb-3">
+                                                            <label for="usuario" class="form-select">REGISTRADO POR</label>
+                                                            <select class="custom-select rounded-0"  id="usuario" name="usuario" class="form-select">
+                                                              <option value="<%= userName %>" selected><%= userName %></option>                          
+                                                            </select>
+                                                        </div>                    
+                                                    </div>
+                                                    </div>
+                                                    <select class="duallistbox" id="id_objeto" name="id_objeto" style="height:300px;">
+                                                      <option value="" disabled selected>Selecciona una opción</option>
+                                                      <% lista.forEach(function(item) { %>
+                                                          <option value="<%= item.id_objeto %>"><%= item.ruta %></option>
+                                                      <% }); %>  
+                                                  </select>
+                                                  
+                                                  </div>                                  
+                                                  <!-- /.form-group -->
+                                                </div>
+                                                <!-- /.col -->
+                                              </div>
+                                              <button type="submit" class="btn btn-primary" tabindex="12">GUARDAR</button>
+                                              <a href="/inventarioReportes" class="btn btn-secondary">CANCELAR</a>
+                                              <!-- /.row -->
+                                            </div>
+                                            <!-- /.card-body -->
+                                          </div>
+                                          <!-- /.card -->
+                                        </div>  
+                                      </div>
+                                    </form>
+                                  </div>
+                                </div>
+                              </div>
+                              <!-- /.card-body -->
+                            </div>
+                          </div>                          
+                        </div>                        
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="card card-secondary">
+                              <div class="card-header">
+                                <h3 class="card-title">HIJO</h3>
+                              </div>
+                              <div class="card-body">
+                                
+                              </div>
+                              <!-- /.card-body -->
+                            </div>
+                          </div>
+                        </div>
+                                                                   
+                      </div>
+                      <!-- /.tab-pane -->
+
+                      <div class="tab-pane" id="procesos">
+                                                
+                      </div>
+
+                      <div class="tab-pane" id="dependencias">
+
+                      </div>
+                      <!-- /.tab-pane -->
+                    </div>
+                    <!-- /.tab-content -->
+                  </div><!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>      
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+<%- include("template/footer") %>
