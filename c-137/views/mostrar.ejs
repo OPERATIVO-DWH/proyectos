@@ -1,0 +1,58 @@
+<%- include("template/header")%>
+<%- include("template/navbar")%>
+<%- include("template/aside") %>
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper"> 
+  <%- include('template/breadcrumb', { module: 'BIENVENIDA', module1: 'INICIO' }) %>
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
+      <div class="card card-info card-outline">
+        <div class="card-body text-center">
+          <h1>¡Bienvenido a la Plataforma de Reportes!</h1>
+          <p class="lead">Estamos encantados de tenerte aquí. Usa el menú de navegación para explorar las funcionalidades disponibles.</p>
+          <a href="/inventarioReportesCreate" class="btn btn-primary mt-4">Comenzar <i class="fa-solid fa-arrow-right"></i></a>
+        </div><!-- /.card-body -->
+      </div>
+    </div><!-- /.container-fluid -->
+    <div class="card card-info card-outline">
+        <!-- <div class="card-header">
+          <h3 class="card-title">Icons</h3>
+        </div> /.card-body -->
+        <div class="card-body">
+          <a href="/inventarioReportesCreate" class="btn btn-primary mt-4 mb-2">NUEVO <i class="fa-solid fa-square-plus"></i></a>
+          <table id="example1" class="table table-striped mt-4 table-responsive">
+            <thead class="table-dark">
+              <tr>
+                <th scope="col">#ID</th>
+                <!-- <th scope="col">ESTADO</th> -->
+                <th scope="col">REPORTE</th>
+                <th scope="col">RUTA</th>
+                <th scope="col">Descargar</th>           
+              </tr>
+            </thead>
+            <tbody>
+                <% results.forEach((user) => { %>
+                    <tr>
+                        <td><%= user.id %></td>
+                        <!-- <td><%= user.estado_reporte %></td> -->
+                        <td><%= user.reporte %></td>
+                        <td><%= user.direccion_ftp %></td>
+                        <td>
+                          <!--<a href="/download?id=1" class="btn btn-primary">Descargar CONTROL_5.xlsx</a>-->
+                          <a href="<%= user.URL %>" class="brand-text" download="<%= user.reporte %>">Descarga reporte</a>   
+                          
+                        </td>
+                    </tr> 
+                <% }) %>             
+            </tbody>
+        </table>            
+        </div><!-- /.card-body -->
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+<%- include("template/footer") %>

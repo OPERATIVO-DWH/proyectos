@@ -1,3 +1,4 @@
+const https = require('https');
 const express = require('express')
 const router = express.Router()
 // invoca a la base de datos mysql
@@ -10,6 +11,11 @@ const authControllers = require('../controllers/authControllers')
 
 const { Router } = require('express')
 const { json } = require('express')
+
+const { exec } = require('child_process');
+
+const path = require('path');
+const fs = require('fs');
 
 //es la raiz
 router.get('/users', authControllers.isAuthenticate,(req, res)=> {
@@ -846,5 +852,303 @@ router.get('/monitorNetezzaConsultas_activas', authControllers.isAuthenticate, a
 
 
 
+
+router.get('/download', authControllers.isAuthenticate, (req, res) => {
+    let query;
+    let queryParams = [];
+
+    if (req.user.rol === "Admin") {
+        query = `
+            SELECT DISTINCT
+                r.id,
+                r.reporte,
+                r.direccion_ftp 
+            FROM 
+                monitor_ftp_control_h_0_copy_test r 
+            ORDER BY 
+                r.id ASC
+        `;
+    } else if (req.user.rol === "Suscriptor") {
+        query = `
+            SELECT DISTINCT
+                r.id,
+                r.reporte,
+                r.direccion_ftp 
+            FROM 
+                monitor_ftp_control_h_0_copy_test r 
+            WHERE 
+                r.usuario = ?
+            ORDER BY 
+                r.id ASC
+        `;
+        queryParams = [req.user.email];
+    }
+
+    conexion.query(query, queryParams, (error, results) => {
+        if (error) {
+            throw error;
+        } else {
+            const currentDateTime = new Date();
+            const currentDate = currentDateTime.toISOString().split('T')[0];
+            const currentHour = String(currentDateTime.getHours()).padStart(2, '0');
+
+            results.forEach((result) => {
+                if (result.direccion_ftp && result.reporte) {
+                    const filePath = path.join(result.direccion_ftp, result.reporte);
+
+                    try {
+                        const stats = fs.statSync(filePath);
+
+                        const formatDate = (date) => {
+                            const day = String(date.getDate()).padStart(2, '0');
+                            const month = String(date.getMonth() + 1).padStart(2, '0');
+                            const year = date.getFullYear();
+                            const hours = String(date.getHours()).padStart(2, '0');
+                            const minutes = String(date.getMinutes()).padStart(2, '0');
+                            const seconds = String(date.getSeconds()).padStart(2, '0');
+                            return `${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
+                        };
+
+                        result.mtime = formatDate(stats.mtime);
+
+                        // Verificar si la fecha y hora de la modificación coinciden con la fecha y hora actual
+                        const mtimeDate = new Date(stats.mtime);
+                        const mtimeDateOnly = mtimeDate.toISOString().split('T')[0];
+                        const mtimeHour = String(mtimeDate.getHours()).padStart(2, '0');
+
+                        result.isToday = currentDate === mtimeDateOnly;
+                        result.isCurrentHour = currentHour === mtimeHour;
+
+                    } catch (err) {
+                        console.error(`Error al obtener la fecha de última modificación para el archivo ${filePath}:`, err);
+                        result.mtime = 'No disponible';
+                        result.isToday = false;
+                        result.isCurrentHour = false;
+                    }
+                } else {
+                    console.warn(`Advertencia: 'direccion_ftp' o 'reporte' están vacíos para el id ${result.id}`);
+                    result.mtime = 'No disponible';
+                    result.isToday = false;
+                    result.isCurrentHour = false;
+                }
+            });
+
+            res.render('download', { results: results });
+        }
+    });
+});
+
+
+
+
+
+router.get('/download_file', authControllers.isAuthenticate, (req, res) => {
+    if (req.user.rol === "Admin" || req.user.rol === "Suscriptor") {
+        const id = req.query.id; // Obtiene el ID desde los parámetros de la URL
+        const ftp = decodeURIComponent(req.query.ftp); // Obtiene la dirección FTP desde los parámetros de la URL
+        console.log('Dirección FTP recibida:', ftp);
+        console.log('ID recibido:', id); // Log del ID recibido
+
+        // Asume que el ID corresponde directamente al nombre del archivo
+        const filename = `${id}`; // Usa el ID para construir el nombre del archivo
+        console.log('Nombre del archivo:', filename);
+
+        // Construye la ruta del archivo
+        const filePath = path.join(ftp.endsWith('\\') ? ftp : ftp + '\\', filename);
+        console.log('Ruta del archivo:', filePath); // Log de la ruta del archivo
+
+        // Verifica si el archivo existe antes de intentar descargarlo
+        fs.access(filePath, fs.constants.F_OK, (err) => {
+            if (err) {
+                console.error('Archivo no encontrado:', filePath);
+                return res.redirect('/download?error=ARCHIVO_NO_ENCONTRADO');
+            }
+
+            // Obtiene las estadísticas del archivo
+            fs.stat(filePath, (err, stats) => {
+                if (err) {
+                    console.error('Error al obtener detalles del archivo:', err);
+                    return res.redirect('/download?error=ERROR_OBTENER_DETALLES');
+                }
+
+                // Imprime la fecha de creación y la fecha de última modificación
+                console.log('Fecha de creación:', stats.birthtime);
+                console.log('Fecha de última modificación:', stats.mtime);
+
+                // Maneja la descarga del archivo
+                res.download(filePath, filename, (err) => {
+                    if (err) {
+                        console.error('Error al descargar el archivo:', err);
+                        return;
+                    }
+
+                    // Registra la descarga en la base de datos solo si la descarga fue exitosa
+                    const fecha_accion = new Date();
+
+                    // Extrae solo la dirección IP IPv4 si es necesario
+                    let ip_usuario = req.ip || req.connection.remoteAddress;
+                    if (ip_usuario.startsWith('::ffff:')) {
+                        ip_usuario = ip_usuario.substring(7); // Elimina la parte '::ffff:'
+                    }
+
+                    // Realiza la inserción en la base de datos
+                    conexion.query('INSERT INTO log_descargas SET ?', {
+                        id_reporte: id, // Asegúrate de que este valor sea compatible con el tipo de datos de la columna
+                        nombre_reporte: filename,
+                        accion: 'DESCARGAR',
+                        usuario: req.user.email,
+                        fecha_accion: fecha_accion,
+                        ip_usuario: ip_usuario
+                    }, (error) => {
+                        if (error) {
+                            console.error('Error al registrar la descarga:', error);
+                            // No redirijas aquí, solo registra el error
+                        }
+
+                        // Solo redirige después de intentar registrar la descarga
+                        // Si hay un error al registrar, aún redirige, solo si la respuesta no fue enviada antes
+                        if (!res.headersSent) {
+                            res.redirect('/download?status=success');
+                        }
+                    });
+                });
+            });
+        });
+
+    } else {
+        res.render('index', { userName: req.user.email, titleweb: "Inicio" });
+    }
+});
+
+
+
+router.get('/abrir_file', authControllers.isAuthenticate, (req, res) => {
+    if (req.user.rol === "Admin" || req.user.rol === "Suscriptor") {
+        const id = req.query.id; // Obtiene el ID desde los parámetros de la URL
+        const ftp = decodeURIComponent(req.query.ftp); // Obtiene la dirección FTP desde los parámetros de la URL
+        console.log('Dirección FTP recibida:', ftp);
+        console.log('ID recibido:', id); // Log del ID recibido
+
+        // Asume que el ID corresponde directamente al nombre del archivo
+        const filename = `${id}`; // Usa el ID para construir el nombre del archivo
+        console.log('Nombre del archivo:', filename);
+
+        // Construye la ruta del archivo
+        const filePath = path.join(ftp.endsWith('\\') ? ftp : ftp + '\\', filename);
+        console.log('Ruta del archivo:', filePath); // Log de la ruta del archivo
+
+        // Verifica si el archivo existe antes de intentar abrirlo
+        fs.access(filePath, fs.constants.F_OK, (err) => {
+            if (err) {
+                console.error('Archivo no encontrado:', filePath);
+                return res.redirect('/download?error=ARCHIVO_NO_ENCONTRADO');
+            }
+
+            // Obtiene las estadísticas del archivo
+            fs.stat(filePath, (err, stats) => {
+                if (err) {
+                    console.error('Error al obtener detalles del archivo:', err);
+                    return res.redirect('/download?error=ERROR_OBTENER_DETALLES');
+                }
+
+                // Imprime la fecha de creación y la fecha de última modificación
+                console.log('Fecha de creación:', stats.birthtime);
+                console.log('Fecha de última modificación:', stats.mtime);
+
+                // Abre el archivo en el sistema operativo
+                exec(`start "" "${filePath}"`, (err) => {
+                    if (err) {
+                        console.error('Error al intentar abrir el archivo:', err);
+                        res.redirect('/download?error=ERROR_ABRIR_ARCHIVO');
+                    } else {
+                        console.log('Archivo abierto exitosamente:', filePath);
+                        // Opcional: redirige a una página de éxito o muestra un mensaje
+                        //res.redirect('/download'); // Cambia esta ruta según sea necesario
+                    }
+                });
+            });
+        });
+
+    } else {
+        res.render('index', { userName: req.user.email, titleweb: "Inicio" });
+    }
+});
+
+
+router.get('/todo_reportes', authControllers.isAuthenticate, (req, res) => {
+    let query;
+    let queryParams = [];
+
+    if (req.user.rol === "Admin") {
+        query = `
+            SELECT DISTINCT
+                r.id,
+                r.reporte,
+                r.direccion_ftp 
+            FROM 
+                monitor_ftp_control_h_0_copy_test r 
+            ORDER BY 
+                r.id ASC
+        `;
+    } else if (req.user.rol === "Suscriptor") {
+        query = `
+            SELECT DISTINCT
+                r.id,
+                r.reporte,
+                r.direccion_ftp 
+            FROM 
+                monitor_ftp_control_h_0_copy_test r 
+            ORDER BY 
+                r.id ASC
+        `;
+        queryParams = [req.user.email];
+    }
+
+    conexion.query(query, queryParams, (error, results) => {
+        if (error) {
+            throw error;
+        } else {
+            const today = new Date().toISOString().split('T')[0];
+            
+            results.forEach((result) => {
+                if (result.direccion_ftp && result.reporte) {
+                    const filePath = path.join(result.direccion_ftp, result.reporte);
+
+                    try {
+                        const stats = fs.statSync(filePath);
+                        const formatDate = (date) => {
+                            const day = String(date.getDate()).padStart(2, '0');
+                            const month = String(date.getMonth() + 1).padStart(2, '0');
+                            const year = date.getFullYear();
+                            const hours = String(date.getHours()).padStart(2, '0');
+                            const minutes = String(date.getMinutes()).padStart(2, '0');
+                            const seconds = String(date.getSeconds()).padStart(2, '0');
+                            return `${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
+                        };
+
+                        result.mtime = formatDate(stats.mtime);
+                        const mtimeDate = new Date(stats.mtime).toISOString().split('T')[0];
+                        result.isToday = today === mtimeDate;
+
+                    } catch (err) {
+                        console.error(`Error al obtener la fecha de última modificación para el archivo ${filePath}:`, err);
+                        result.mtime = 'No disponible';
+                        result.isToday = false;
+                    }
+                } else {
+                    console.warn(`Advertencia: 'direccion_ftp' o 'reporte' están vacíos para el id ${result.id}`);
+                    result.mtime = 'No disponible';
+                    result.isToday = false;
+                }
+            });
+
+            res.render('todo_reportes', { results: results });
+        }
+    });
+});
+
+
+router.post('/saveTablas', userControllers.saveTablas); 
+router.post('/updateTablas', userControllers.updateRepor); 
 
 module.exports = router;

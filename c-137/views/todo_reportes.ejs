@@ -1,0 +1,51 @@
+<%- include("template/header")%>
+<%- include("template/navbar")%>
+<%- include("template/aside") %>
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper"> 
+  <%- include('template/breadcrumb', { module: '', module1: 'INICIO' }) %>
+  <h3> Todos los Reportes </h3>
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
+      
+    <div class="card card-info card-outline">
+        <div class="card-body">
+            
+          <table id="example1" class="table table-striped mt-4 table-responsive">
+            <thead class="table-dark">
+              <tr>
+                <th scope="col">#ID</th>
+                <th scope="col">REPORTE</th>
+                <th scope="col">ESTADO</th>
+                <th scope="col">FECHA ACTUALIZACION</th>
+              </tr>
+            </thead>
+
+         
+     
+            <tbody>
+              <% results.forEach((user) => { %>
+                <tr>
+                  <td><%= user.id %></td>
+                  <td><%= user.reporte %></td>
+                  <td class="text-center">
+                    <span class="badge <%= user.isToday ? 'bg-success' : 'bg-danger' %>">
+                      <%= user.isToday ? 'OK' : 'NOOK' %>
+                    </span>
+                  </td>
+                  <td><%= user.mtime %></td>
+                </tr> 
+              <% }) %>             
+            </tbody>
+          </table>  
+                            
+        </div><!-- /.card-body -->
+    </div>
+</div><!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+<%- include("template/footer") %>
