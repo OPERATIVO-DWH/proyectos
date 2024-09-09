@@ -1,0 +1,53 @@
+<%- include("template/header") %>
+<%- include("template/navbar") %>
+<%- include("template/aside")%>
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">        
+  <%- include('template/breadcrumb', { module: 'NUEVO REPORTE', module1: ' INVENTARIO / REPORTES / NUEVO REPORTE' }) %>
+
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
+        <% if (alert) { %>
+            <div class="alert alert-danger" role="alert">
+                <%= alertMessage %>
+            </div>
+        <% } %>
+      <!-- Main row -->
+      <div class="card card-info card-outline">                
+        <div class="card-body">
+          <form action="/saveAcceso" method="POST">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="direccion_ftp" class="form-label">Dirección FTP</label>
+                        <input type="text" class="form-control" id="direccion_ftp" name="direccion_ftp" tabindex="1" required>              
+                    </div>
+                </div>   
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="reporte" class="form-label">Reporte</label>
+                        <input type="text" class="form-control" id="reporte" name="reporte" tabindex="2" required>              
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="usuario" class="form-label">Acceso a Usuario</label>
+                        <input type="text" class="form-control" id="usuario" name="usuario" tabindex="3" required>              
+                    </div>
+                </div>                                         
+            </div>   
+               
+            <button type="submit" class="btn btn-primary" tabindex="6">GUARDAR</button>
+            <a href="/Acceso_reportes" class="btn btn-secondary">CANCELAR</a>
+          </form>            
+        </div><!-- /.card-body -->
+      </div>
+      <!-- /.row (main row) -->
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+<%- include("template/footer") %>

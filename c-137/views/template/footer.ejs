@@ -84,6 +84,23 @@
             }
         });
     }
+
+    function confirmationAccesos(id){
+        Swal.fire({
+            title: "¿ESTÁ SEGURO DE ELIMINAR EL ACCESO?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Si",
+            cancelButtonText: "Cancelar" 
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location = '/deleteAcceso/' + id;
+            }
+        });
+    }
+
     function confirmationTabla(id){
         Swal.fire({
             title: "¿ESTÁ SEGURO DE ELIMINAR LA TABLA?",
