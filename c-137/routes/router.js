@@ -46,6 +46,8 @@ router.get('/users', authControllers.isAuthenticate,(req, res)=> {
     })    
 });
 
+
+
 // para direccionar a create.ejs
 router.get('/createUser', authControllers.isAuthenticate,(req, res) => {
     if(req.user.rol=="Admin") {
@@ -167,6 +169,7 @@ router.get('/inventarioReportesCreate', authControllers.isAuthenticate,(req, res
 });
 
 
+
 // para direccionar a edit.ejs
 router.get('/inventarioReportesEdit/:id', authControllers.isAuthenticate,(req, res) => {
     const id = req.params.id;
@@ -185,8 +188,21 @@ router.get('/inventarioReportesEdit/:id', authControllers.isAuthenticate,(req, r
 
 
 
+
+
+
+
+
+
 router.post('/saveRepor', userControllers.saveRepor); 
 router.post('/updateRepor', userControllers.updateRepor); 
+
+
+
+
+ 
+
+
 
 // Para el delete reporte
 router.get('/deleteRepo/:id', authControllers.isAuthenticate, (req, res) => {
@@ -207,6 +223,8 @@ router.get('/deleteRepo/:id', authControllers.isAuthenticate, (req, res) => {
         res.redirect('/inventarioReportes?error=NO_TIENE_PERMISO');
     }
 });
+
+
 
 // direcciona inventarioTablas
 
@@ -1171,7 +1189,110 @@ router.get('/todo_reportes', authControllers.isAuthenticate, (req, res) => {
 });
 
 
+
+
+
+router.get('/Acceso_reportes', authControllers.isAuthenticate, (req, res) => {
+    let query;
+    let queryParams = [];
+
+    if (req.user.rol === "Admin") {
+        query = `
+            SELECT 
+                id, direccion_ftp, reporte, usuario ,fecha_modificacion
+            FROM monitor_ftp_control_h_0_copy_test
+            ORDER BY id ASC
+        `;
+    } else if (req.user.rol === "Suscriptor") {
+        query = `
+            SELECT 
+                id, direccion_ftp, reporte, usuario ,fecha_modificacion
+            FROM monitor_ftp_control_h_0_copy_test
+            WHERE usuario = ?
+            ORDER BY id ASC
+        `;
+        queryParams = [req.user.email];
+    }
+
+    conexion.query(query, queryParams, (error, results) => {
+        if (error) {
+            console.error('Error en la consulta:', error);
+            return res.status(500).send('Error en el servidor');
+        }
+
+        // Proceso adicional si es necesario (como calcular mtime o estados)
+
+        res.render('Acceso_reportes', { results });
+    });
+});
+
+ 
+router.get('/Acceso_reportes_Edit/:id', authControllers.isAuthenticate, (req, res) => {
+    const id = req.params.id;
+
+    // Asegúrate de que 'id' es el nombre correcto de la columna en la tabla 'monitor_ftp_control_h_0_copy_test'
+    conexion.query('SELECT id, reporte, direccion_ftp, usuario,DATE_FORMAT(fecha_modificacion, \'%Y-%m-%d %H:%i:%s\')as fecha_modificacion FROM monitor_ftp_control_h_0_copy_test WHERE id = ?', [id], (error, results) => {
+        if (error) {
+            console.error('Error en la consulta SQL:', error);
+            return res.status(500).send('Error en la consulta SQL');
+        } else {
+            // Mostrar los resultados en la consola
+            console.log('Resultados de la consulta:', results);
+
+            if (req.user && (req.user.rol === 'Admin' || req.user.rol === 'Suscriptor')) {
+                // Asegúrate de que la vista 'Accesso_reportes_Edit' existe
+                res.render('Acceso_reportes_Edit', { user: results[0], userName: req.user.email });
+                
+            } else {
+                res.render('index', { userName: req.user.email, titleweb: 'Inicio' });
+            }
+        }
+    });
+});
+
+
+  
 router.post('/saveTablas', userControllers.saveTablas); 
-router.post('/updateTablas', userControllers.updateRepor); 
+router.post('/updateTablas', userControllers.updateRepor);  
+router.post('/Acceso_reportes_Edit', userControllers.Acceso_reportes_Edit); 
+router.post('/updateAcesso_reporte',  userControllers.updateAcesso_reporte);
+
+ 
+
+// para direccionar a AccesoreportesCreate.ejs
+router.get('/AccesoreportesCreate', authControllers.isAuthenticate,(req, res) => {
+    if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
+        res.render('AccesoreportesCreate', { userName: req.user.email, alert: false })        
+    } else {
+        res.render('index', { userName: req.user.email, titleweb: "Inicio" });
+    }       
+});
+
+router.post('/saveAcceso', userControllers.saveAcceso); 
+
+
+
+
+
+// Para el delete reporte
+router.get('/deleteAcceso/:id', authControllers.isAuthenticate, (req, res) => {
+    const id = req.params.id;
+
+    // Verificar si el usuario tiene el rol de Admin
+    if (req.user.rol === "Admin") {
+        conexion.query('DELETE FROM monitor_ftp_control_h_0_copy_test WHERE id = ?', [id], (error, results) => {
+            if (error) {
+                throw error;
+            } else {
+                // Redirigir a la vista de inventarioReportes después de la eliminación
+                res.redirect('/Acceso_reportes');
+            }
+        });
+    } else {
+        // Redirigir a la vista de inventarioReportes con un mensaje de error o de no autorizado si no es admin
+        res.redirect('/Acceso_reportes?error=NO_TIENE_PERMISO');
+    }
+});
+
 
 module.exports = router;

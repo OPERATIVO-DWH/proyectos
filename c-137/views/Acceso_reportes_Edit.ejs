@@ -1,0 +1,51 @@
+<%- include("template/header") %>
+<%- include("template/navbar") %>
+<%- include("template/aside")%>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper"> 
+  <%- include('template/breadcrumb', { module: 'EDITA PERMISO REPORTE', module1: 'INVENTARIO / REPORTES / EDITA PERMISO' }) %>
+
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
+      <div class="card card-info card-outline">
+        <div class="card-body">
+            <form action="/updateAcesso_reporte" method="POST">
+                <input type="hidden" name="id" value="<%= user.id %>">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="reporte" class="form-label">Reporte</label>
+                            <input type="text" class="form-control" id="reporte" name="reporte" value="<%= user.reporte %>" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="direccion_ftp" class="form-label">Dirección FTP</label>
+                            <input type="text" class="form-control" id="direccion_ftp" name="direccion_ftp" value="<%= user.direccion_ftp %>" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="usuario" class="form-label">Usuario</label>
+                            <input type="text" class="form-control" id="usuario" name="usuario" value="<%= user.usuario %>" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="fecha_modificacion" class="form-label">Fecha Modificación</label>
+                            <input type="text" class="form-control" id="fecha_modificacion" name="fecha_modificacion" value="<%= user.fecha_modificacion %>" readonly>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <a href="/Acceso_reportes" class="btn btn-secondary">Cancelar</a>
+            </form>
+            
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<%- include("template/footer") %>

@@ -312,3 +312,97 @@ exports.saveTablaDepenPadre = async (req, res) => {
         res.status(500).send('Error en el servidor');
     }
 };
+
+
+exports.Acceso_reportes_Edit = (req, res) => {
+    const id = req.body.id;
+    const reporte = req.body.reporte;
+    const direccion_ftp = req.body.direccion_ftp;
+    const usuario = req.body.usuario;
+
+    // Obtener la hora del sistema e IP del cliente
+    const fecha_modificacion = new Date();  
+    const ip_modificacion = req.connection.remoteAddress;
+
+    conexion.query(
+        'UPDATE monitor_ftp_control_h_0_copy_test SET reporte = ?, direccion_ftp = ?, usuario = ?, fecha_modificacion = ?, ip_modificacion = ? WHERE id = ?',
+        [reporte, direccion_ftp, usuario, fecha_modificacion, ip_modificacion, id],
+        (error, results) => {
+            if (error) {
+                console.error(error);
+                res.status(500).send('Error al actualizar el registro');
+            } else {
+                res.redirect('/Acceso_reportes');
+            }
+        }
+    );
+};
+
+
+exports.updateAcesso_reporte = (req, res) => {
+    const id = req.body.id; // Se obtiene el ID del reporte
+    const reporte = req.body.reporte; // Se obtiene el valor del reporte
+    const direccion_ftp = req.body.direccion_ftp; // Se obtiene la dirección FTP
+    const usuario = req.body.usuario; // Se obtiene el usuario
+
+    // Actualizar el campo `fecha_modificacion` con la fecha actual
+    const fecha_modificacion = new Date(); // Fecha actual del sistema
+
+    // Obtener la IP del cliente
+    const ip_insert = req.connection.remoteAddress; 
+
+    // Actualizar los campos en la tabla 'monitor_ftp_control_h_0_copy_test'
+    conexion.query('UPDATE monitor_ftp_control_h_0_copy_test SET ? WHERE id = ?', [
+        {
+            reporte: reporte,
+            direccion_ftp: direccion_ftp,
+            usuario: usuario,
+            fecha_modificacion:conexion.raw('SYSDATE()')
+        },
+        id
+    ], (error, results) => {
+        if (error) {
+            console.error('Error al actualizar el reporte:', error);
+            res.status(500).send('Error al actualizar el reporte');
+        } else {
+            // Redirigir a la página de inventario/reportes una vez actualizado
+            res.redirect('/Acceso_reportes');
+        }
+    });
+};
+
+
+
+exports.saveAcceso = async (req, res) => {
+    try {
+        // Obtén los datos del formulario
+        const direccion_ftp = req.body.direccion_ftp;
+        const reporte = req.body.reporte;
+        const usuario = req.body.usuario;
+
+        // Configura la fecha de modificación como la fecha actual
+        const fecha_modificacion = new Date();
+
+        // Ejecuta la consulta SQL para insertar los datos en la tabla
+        conexion.query(
+            'INSERT INTO monitor_ftp_control_h_0_copy_test (direccion_ftp, reporte, usuario, fecha_modificacion) VALUES (?, ?, ?, ?)',
+            [direccion_ftp, reporte, usuario, fecha_modificacion],
+            (error, results) => {
+                if (error) {
+                    console.error(error);
+                    // Renderiza la vista del formulario con el mensaje de error y los datos del formulario
+                    return res.render('Acceso_reportesCreate', {
+                        alert: true,
+                        alertMessage: '| ERROR DE REGISTRO - Consulte al Administrador',
+                        userName: usuario
+                    });
+                } else {
+                    res.redirect('/Acceso_reportes');
+                }
+            }
+        );
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error en el servidor');
+    }
+};
