@@ -1,29 +1,20 @@
-const express = require('express');
 const { exec } = require('child_process');
+const path = require('path');
 
-const app = express();
-const port = 3000; // Puedes elegir el puerto que prefieras
+// Especificar la ruta del script de Python
+const pythonScriptPath = path.join('C:', 'Users', 'jhbalderrama', 'Desktop', 'python', 'extractor.py');
 
-// Ruta para abrir el archivo
-app.get('/open-file', (req, res) => {
-    // Ruta completa del archivo en la red en el servidor remoto
-    const filePath = '\\\\10.40.3.208\\for_update\\VivaBox_temp_detalle.xlsm';
+// Ejecutar el script de Python
+exec(`python "${pythonScriptPath}"`, (error, stdout, stderr) => {
+    if (error) {
+        console.error(`Error al ejecutar el script de Python: ${error.message}`);
+        return;
+    }
 
-    // Comando SSH para abrir el archivo en el servidor remoto
-    const command = `ssh user@10.40.3.208 "start \\"${filePath}\\""`
+    if (stderr) {
+        console.error(`Error en el script de Python: ${stderr}`);
+        return;
+    }
 
-    exec(command, (err, stdout, stderr) => {
-        if (err) {
-            console.error('Error al intentar abrir el archivo en el servidor remoto:', err);
-            return res.status(500).send('Error al abrir el archivo en el servidor remoto');
-        }
-        console.log('stdout:', stdout);
-        console.error('stderr:', stderr);
-        res.send('Archivo abierto exitosamente en el servidor remoto');
-    });
-});
-
-// Inicia el servidor
-app.listen(port, () => {
-    console.log(`Servidor web escuchando en http://localhost:${port}`);
+    console.log(`Salida del script de Python:\n${stdout}`);
 });

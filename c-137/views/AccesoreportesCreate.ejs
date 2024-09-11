@@ -1,6 +1,6 @@
 <%- include("template/header") %>
 <%- include("template/navbar") %>
-<%- include("template/aside")%>
+<%- include("template/aside") %>
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">        
@@ -27,7 +27,7 @@
                 </div>   
                 <div class="col-md-4">
                     <div class="mb-3">
-                        <label for="reporte" class="form-label">Reporte</label>
+                        <label for="reporte" class="form-label">Reporte o Link</label>
                         <input type="text" class="form-control" id="reporte" name="reporte" tabindex="2" required>              
                     </div>
                 </div>
@@ -36,10 +36,19 @@
                         <label for="usuario" class="form-label">Acceso a Usuario</label>
                         <input type="text" class="form-control" id="usuario" name="usuario" tabindex="3" required>              
                     </div>
-                </div>                                         
-            </div>   
-               
-            <button type="submit" class="btn btn-primary" tabindex="6">GUARDAR</button>
+                </div>   
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="tipo_acceso" class="form-label">Tipo Acceso</label>
+                        <select class="form-control" id="tipo_acceso" name="tipo_acceso" tabindex="4" required>
+                            <option value="" disabled selected>Selecciona un tipo de acceso</option>
+                            <option value="link">LINK</option>
+                            <option value="descarga">DESCARGA</option>
+                        </select>
+                    </div>
+                </div>   
+            </div>               
+            <button type="submit" class="btn btn-primary" tabindex="5">GUARDAR</button>
             <a href="/Acceso_reportes" class="btn btn-secondary">CANCELAR</a>
           </form>            
         </div><!-- /.card-body -->

@@ -5,7 +5,7 @@
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper"> 
   <%- include('template/breadcrumb', { module: '', module1: 'INICIO' }) %>
-  <h3> Permisos Reportes </h3>
+  <h3> Acceso Reportes </h3>
   <!-- Main content -->
   <section class="content">
     <div class="container-fluid">
@@ -18,9 +18,10 @@
                 <TH SCOPE="col">#ID</TH>
                 <TH SCOPE="col">DIRECCIÓN FTP</TH>
                 <TH SCOPE="col">REPORTE</TH>
-                <TH SCOPE="col">ACCESO A USUARIO:</TH>
-                <TH SCOPE="col">ACCIONES</TH>
+                <TH SCOPE="col">ACCESO A USUARIO:</TH>                
                 <TH SCOPE="col">FECHA ACTUALIZACIÓN</TH>
+                <TH SCOPE="col">TIPO_ACCESO</TH>                
+                <TH SCOPE="col">ACCIONES</TH>
               </tr>
             </thead>
             <tbody>
@@ -30,17 +31,7 @@
                   <td><%= report.direccion_ftp %></td>
                   <td><%= report.reporte %></td>
                   <td><%= report.usuario %></td>
-                  <td>
-                    <!-- Enlace para editar el reporte -->
-                    <a href="/Acceso_reportes_Edit/<%= report.id %>" class="btn btn-primary" data-toggle="tooltip" title="EDITAR">
-                        <i class="fa-solid fa-pen-to-square"></i>
-                    </a>
-                
-                    <!-- Enlace para borrar el reporte con confirmación -->
-                    <a href="#" onclick="confirmationAccesos('<%= report.id %>'); return false;" class="btn btn-danger" data-toggle="tooltip" title="BORRAR">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </a>
-                </td>
+
                   <td><%= new Date(report.fecha_modificacion).toLocaleString('en-CA', { 
                     year: 'numeric', 
                     month: '2-digit', 
@@ -49,7 +40,21 @@
                     minute: '2-digit', 
                     second: '2-digit', 
                     hour12: false 
-                }).replace(',', '') %></td>
+                  }).replace(',', '') %>
+              </td>
+              <td><%= report.tipo_acceso %></td>
+                  <td>
+                        <!-- Enlace para editar el reporte -->
+                        <a href="/Acceso_reportes_Edit/<%= report.id %>" class="btn btn-primary" data-toggle="tooltip" title="EDITAR">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                    
+                        <!-- Enlace para borrar el reporte con confirmación -->
+                        <a href="#" onclick="confirmationAccesos('<%= report.id %>'); return false;" class="btn btn-danger" data-toggle="tooltip" title="BORRAR">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </a>
+                </td>
+              
                 </tr>
               <% }) %>
             </tbody>
