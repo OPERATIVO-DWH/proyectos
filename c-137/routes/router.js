@@ -529,7 +529,8 @@ router.get('/dependenciasReporte/:id', authControllers.isAuthenticate, async (re
             SELECT 
                 padre_id AS ID, 
                 padre_tipo AS TIPO,
-                CONCAT(padre_id, '_', padre_tipo) AS ID_TIPO,
+                padre_tipo_id TIPO_ID,
+                -- CONCAT(padre_id, '_', padre_tipo_id) AS ID_TIPO,
                 'DEPENDENCIA PADRE' AS direccion, -- Marca la dirección como ascendente
                 1 AS nivel -- Nivel inicial para padres
             FROM 
@@ -542,7 +543,8 @@ router.get('/dependenciasReporte/:id', authControllers.isAuthenticate, async (re
             SELECT 
                 r.padre_id AS ID, 
                 r.padre_tipo AS TIPO,
-                CONCAT(r.padre_id, '_', r.padre_tipo) AS ID_TIPO,
+                r.padre_tipo_id TIPO_ID,
+                -- CONCAT(r.padre_id, '_', r.padre_tipo_id) AS ID_TIPO,
                 'DEPENDENCIA PADRE' AS direccion,
                 ph.nivel + 1 AS nivel -- Incrementa el nivel en 1 para cada iteración ascendente
             FROM 
@@ -555,7 +557,8 @@ router.get('/dependenciasReporte/:id', authControllers.isAuthenticate, async (re
             SELECT 
                 hijo_id AS ID, 
                 hijo_tipo AS TIPO,
-                CONCAT(hijo_id, '_', hijo_tipo) AS ID_TIPO,
+                hijo_tipo_id TIPO_ID,
+                -- CONCAT(hijo_id, '_', hijo_tipo_id) AS ID_TIPO,
                 'DEPENDENCIA HIJO' AS direccion, -- Marca la dirección como descendente
                 1 AS nivel -- Nivel inicial para hijos
             FROM 
@@ -568,7 +571,8 @@ router.get('/dependenciasReporte/:id', authControllers.isAuthenticate, async (re
             SELECT 
                 r.hijo_id AS ID, 
                 r.hijo_tipo AS TIPO,
-                CONCAT(r.hijo_id, '_', r.hijo_tipo) AS ID_TIPO,
+                r.hijo_tipo_id TIPO_ID,
+                -- CONCAT(r.hijo_id, '_', r.hijo_tipo_id) AS ID_TIPO,
                 'DEPENDENCIA HIJO' AS direccion,
                 ch.nivel + 1 AS nivel -- Incrementa el nivel en 1 para cada iteración descendente
             FROM 
@@ -580,11 +584,13 @@ router.get('/dependenciasReporte/:id', authControllers.isAuthenticate, async (re
         SELECT 
             base.ID, 
             base.TIPO, 
-            CONCAT(base.ID, '_', base.TIPO) AS ID_TIPO,
+            base.TIPO_ID,
+            -- CONCAT(base.ID, '_', base.TIPO) AS ID_TIPO,    
+            CAST(CONCAT(base.ID, base.TIPO_ID) AS UNSIGNED) AS ID_TIPO,
             base.direccion,
             base.nivel,
             f.label,    
-            case when base.nivel= 0 then 'gray' else f.color
+            case when base.nivel= 0 then 'orange' else f.color
             END color,
             case when base.nivel= 0 then 'hexagon' else f.shape
             END shape
@@ -593,7 +599,8 @@ router.get('/dependenciasReporte/:id', authControllers.isAuthenticate, async (re
         -- Unión de ambos CTEs
         SELECT DISTINCT 
             ID, 
-            TIPO, 
+            TIPO,
+            TIPO_ID, 
             direccion,
             nivel
         FROM 
@@ -603,12 +610,14 @@ router.get('/dependenciasReporte/:id', authControllers.isAuthenticate, async (re
         SELECT
             ? ID,
             'reporte' TIPO, -- ID y tipo de la entidad inicial
+            111 TIPO_ID,
             'INICIO' direccion,
             0 AS nivel -- El nivel 0 indica el inicio (la entidad inicial)
         UNION
         SELECT DISTINCT 
             ID, 
             TIPO, 
+            TIPO_ID,
             direccion,
             nivel
         FROM 
@@ -622,95 +631,109 @@ router.get('/dependenciasReporte/:id', authControllers.isAuthenticate, async (re
             WITH RECURSIVE padres AS (
             -- Dependencias ascendentes (padres)
             SELECT 
-                padre_id AS ID, 
-                padre_tipo AS TIPO,
-                CONCAT(padre_id, '_', padre_tipo) AS ID_TIPO,
+                padre_id, 
+                padre_tipo,
+                padre_tipo_id, 
+                hijo_id, 
+                hijo_tipo,
+                hijo_tipo_id,
                 'DEPENDENCIA PADRE' AS direccion, -- Marca la dirección como ascendente
-                1 AS nivel -- Nivel inicial para padres
+                0 AS nivel -- Nivel inicial para padres
             FROM 
                 relacion 
             WHERE 
                 hijo_id = ? AND hijo_tipo = 'reporte'  -- ID y tipo de la entidad inicial
-        
             UNION ALL
-        
             SELECT 
-                r.padre_id AS ID, 
-                r.padre_tipo AS TIPO,
-                CONCAT(r.padre_id, '_', r.padre_tipo) AS ID_TIPO,
+                r.padre_id, 
+                r.padre_tipo,
+                r.padre_tipo_id, 
+                r.hijo_id, 
+                r.hijo_tipo,
+                r.hijo_tipo_id,
                 'DEPENDENCIA PADRE' AS direccion,
                 ph.nivel + 1 AS nivel -- Incrementa el nivel en 1 para cada iteración ascendente
             FROM 
                 relacion r
             INNER JOIN 
-                padres ph ON r.hijo_id = ph.ID AND r.hijo_tipo = ph.TIPO
+                padres ph ON r.hijo_id = ph.padre_id AND r.hijo_tipo = ph.padre_tipo
         ),
         hijos AS (
             -- Dependencias descendentes (hijos)
             SELECT 
-                hijo_id AS ID, 
-                hijo_tipo AS TIPO,
-                CONCAT(hijo_id, '_', hijo_tipo) AS ID_TIPO,
+                padre_id, 
+                padre_tipo, 
+                padre_tipo_id,
+                hijo_id, 
+                hijo_tipo,
+                hijo_tipo_id,
                 'DEPENDENCIA HIJO' AS direccion, -- Marca la dirección como descendente
-                1 AS nivel -- Nivel inicial para hijos
+                0 AS nivel -- Nivel inicial para hijos
             FROM 
                 relacion 
             WHERE 
                 padre_id = ? AND padre_tipo = 'reporte'  -- ID y tipo de la entidad inicial
-        
             UNION ALL
-        
             SELECT 
-                r.hijo_id AS ID, 
-                r.hijo_tipo AS TIPO,
-                CONCAT(r.hijo_id, '_', r.hijo_tipo) AS ID_TIPO,
+                r.padre_id, 
+                r.padre_tipo,
+                r.padre_tipo_id,
+                r.hijo_id, 
+                r.hijo_tipo,
+                r.hijo_tipo_id,
                 'DEPENDENCIA HIJO' AS direccion,
                 ch.nivel + 1 AS nivel -- Incrementa el nivel en 1 para cada iteración descendente
             FROM 
                 relacion r
             INNER JOIN 
-                hijos ch ON r.padre_id = ch.ID AND r.padre_tipo = ch.TIPO
+                hijos ch ON r.padre_id = ch.hijo_id AND r.padre_tipo = ch.hijo_tipo
         )
-        
+        SELECT
+            ba.id_tipo_padre AS de,
+            -- ba.padre_id,
+            -- ba.padre_tipo,
+            ba.id_tipo_hijo AS a,
+            -- ba.hijo_id,
+            -- ba.hijo_tipo,
+            -- ba.direccion,
+            -- ba.nivel
+            'to' flecha
+
+        FROM 
+        (
+        -- Unión de ambos CTEs y obtención de los resultados
         SELECT 
-            base.ID, 
-            base.TIPO, 
-            CONCAT(base.ID, '_', base.TIPO) AS ID_TIPO,
-            base.direccion,
-            base.nivel,
-            f.label,    
-            case when base.nivel= 0 then 'gray' else f.color
-            END color,
-            case when base.nivel= 0 then 'hexagon' else f.shape
-            END shape
-        FROM
-        ( 
-        -- Unión de ambos CTEs
-        SELECT DISTINCT 
-            ID, 
-            TIPO, 
+            -- CONCAT(padre_id, '_', padre_tipo) AS id_tipo_padre,
+            CAST(CONCAT(padre_id,padre_tipo_id) AS UNSIGNED) AS id_tipo_padre,
+            padre_id,
+            padre_tipo,
+            -- CONCAT(hijo_id, '_', hijo_tipo) AS id_tipo_hijo,
+            CAST(CONCAT(hijo_id,hijo_tipo_id) AS UNSIGNED) AS id_tipo_hijo,
+            hijo_id,
+            hijo_tipo,
             direccion,
             nivel
         FROM 
             padres
         
-        UNION
-        SELECT
-            ? ID,
-            'reporte' TIPO, -- ID y tipo de la entidad inicial
-            'INICIO' direccion,
-            0 AS nivel -- El nivel 0 indica el inicio (la entidad inicial)
-        UNION
-        SELECT DISTINCT 
-            ID, 
-            TIPO, 
+        UNION ALL
+        
+        SELECT 
+            CAST(CONCAT(padre_id,padre_tipo_id) AS UNSIGNED) AS id_tipo_padre,
+            padre_id,
+            padre_tipo,
+            CAST(CONCAT(hijo_id,hijo_tipo_id) AS UNSIGNED) AS id_tipo_hijo,
+            hijo_id,
+            hijo_tipo,
             direccion,
             nivel
         FROM 
             hijos
-        ) base
-        LEFT JOIN monitor_g_flujo f ON f.id_tipo=CONCAT(base.ID, '_',base.TIPO)
-        `, [id,id,id]); 
+        
+        ORDER BY 
+            direccion ASC,
+            nivel ASC) ba
+        `, [id,id]); 
         
 
         // Verificación de roles y renderizado de la vista

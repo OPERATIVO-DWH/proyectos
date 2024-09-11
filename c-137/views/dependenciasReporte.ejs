@@ -1,6 +1,93 @@
 <%- include("template/header") %>
 <%- include("template/navbar") %>
 <%- include("template/aside")%>
+<style type="text/css">
+  #mynetwork1 {
+    width: auto;
+    height: 300px;
+    border: 1px solid lightgray;
+    background-color: #96c48f;
+  }
+</style>
+
+<script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+<script type="text/javascript">
+  function draw1() {
+    // Definir nodos
+    var nodes1 = [
+      <% flujo.forEach(function(itemf) { %>
+        {            
+          id: <%= itemf.ID_TIPO %>,            
+          label: "<%= itemf.label %>",
+          color: "<%= itemf.color %>",          
+          shape: "<%= itemf.shape %>",
+          size: 13
+        },
+      <% }); %>
+    ];
+
+    // Definir aristas
+    var edges1 = [
+      <% relacion.forEach(function(itemr) { %>
+        {
+          from: <%= itemr.de %>,  // Si los IDs son números, quita las comillas
+          to: <%= itemr.a %>,
+          arrows: '<%= itemr.flecha %>',          
+          dashes: [0, 9],
+          length: 100,
+          width: 6
+        },
+      <% }); %>
+    ];
+
+    // Contenedor del gráfico
+    var container1 = document.getElementById("mynetwork1");
+
+    // Datos del gráfico
+    var data1 = {
+      nodes: nodes1,
+      edges: edges1,
+    };
+
+    // Opciones del gráfico
+    var options1 = {
+      nodes: {
+        shape: "dot",
+        font: {
+          size: 9,
+        },
+        borderWidth: 1,
+        shadow: true,
+      },
+    };
+
+    // Inicializar la red
+    var network1 = new vis.Network(container1, data1, options1);
+
+    // Evento de click en los nodos
+    network1.on("click", function (params) {
+      handleNodeClick(params, nodes1);
+    });
+  }
+
+  // Función para manejar clics en nodos
+  function handleNodeClick(params, nodes) {
+    if (params.nodes.length > 0) {
+      var nodeId = params.nodes[0];
+      var clickedNode = nodes.find(node => node.id === nodeId);
+
+      if (clickedNode && clickedNode.label) {
+        var labelParam = encodeURIComponent(clickedNode.label);
+        window.open("/links/CPflujoRobbyDetalleProcesos/in/" + labelParam, "_blank");
+      }
+    }
+  }
+
+  // Ejecutar el dibujo del gráfico
+  document.addEventListener('DOMContentLoaded', draw1);
+</script>
+
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">        
   <%- include('template/breadcrumb', { module: 'INFORMACION DE DEPENDENCIAS', module1: ' INVENTARIO / INFORMACION DE DEPENDENCIAS' }) %>
@@ -129,17 +216,15 @@
                                       </div>
                                       <!-- /.card-header -->
                                       <div class="card-body">
-                                        <!-- post text -->
-                                        <p>Far far away, behind the word mountains, far from the
-                                          countries Vokalia and Consonantia, there live the blind
-                                          texts. Separated they live in Bookmarksgrove right at</p>
-                        
-                                        <p>the coast of the Semantics, a large language ocean.
-                                          A small river named Duden flows by their place and supplies
-                                          it with the necessary regelialia. It is a paradisematic
-                                          country, in which roasted parts of sentences fly into
-                                          your mouth.</p>
-                                      </div>                                      
+                                        <body onload="draw()">
+                                          <div id="mynetwork1"></div>
+                                          <script type="text/javascript">
+                                          // Llamar a las funciones de dibujo para ambas gráficas
+                                          draw1();
+                                          </script>
+                                      </body>
+                                      </div>
+                                                                                                               
                                     </div>
                                     <!-- /.card -->
                                   </div>
@@ -229,7 +314,68 @@
                       <!-- /.tab-pane -->
 
                       <div class="tab-pane" id="procesos">
-                                                
+                       
+
+                        <div id="container"></div>
+
+                        <script>
+                        Highcharts.chart('container', {
+                            chart: {
+                                type: 'networkgraph',
+                                height: '100%'
+                            },
+                            title: {
+                                text: 'The Indo-European Language Tree',
+                                align: 'left'
+                            },
+                            plotOptions: {
+                                networkgraph: {
+                                    keys: ['from', 'to'],
+                                    layoutAlgorithm: {
+                                        enableSimulation: true,
+                                        //friction: -0.9
+                                    },
+                                    marker: {
+                                        radius: 10
+                                    },
+                                    link: {
+                                        color: '#000',
+                                        lineWidth: 10,
+                                        states: {
+                                            hover: {
+                                                opacity: 0.5
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            series: [{
+                                accessibility: {
+                                    enabled: false
+                                },
+                            dataLabels: {
+                                    enabled: true,
+                                    linkFormat: '',
+                                    style: {
+                                        fontSize: '0.8em',
+                                        fontWeight: 'normal'
+                                    }
+                                },
+                                
+                                data: [
+                                <% relacion.forEach(function(itemr) { %>
+                                    { from: '<%= itemr.de %>', to: '<%= itemr.a %>' },                                  
+                                    <% }); %>   
+                                ],
+                                nodes: [
+                                <% flujo.forEach(function(itemf) { %>
+                                    { id: '<%= itemf.ID_TIPO %>', marker: { radius: 10, fillColor: '<%= itemf.color %>'} }, // Cambiar el nodo aquí
+                                <% }); %>    
+                                ]
+                            }]
+                        });
+                        </script>                         
+                                                                          
                       </div>
 
                       <div class="tab-pane" id="dependencias">
