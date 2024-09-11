@@ -23,7 +23,7 @@
                 <th scope="col">ESTADO</th>
                 <th scope="col">FECHA ACTUALIZACION</th>
                 <th scope="col">TIPO_ACCESO</th>
-                <th scope="col">ACCIÓN</th>           
+                <th scope="col">ACCIÓN</th>             
               </tr>
             </thead>
             
@@ -43,9 +43,67 @@
                     <% if (user.tipo_acceso === 'descarga') { %>
                       <a href="/download_file?id=<%= user.reporte %>&ftp=<%= encodeURIComponent(user.direccion_ftp) %>" class="btn btn-primary">DESCARGAR</a>
                     <% } else { %>
-                      <a href="/link?id=<%= user.reporte %>" class="btn btn-primary" target="_blank">LINK</a>
+                      <!--<a href="/link?id=<%= user.reporte %>" class="btn btn-primary" target="_blank">LINK</a>
+                      <a href="javascript:void(0);" onclick="openPopup('/popup-content?id=<%= user.reporte %>')" class="btn btn-primary"></a>-->
+                      <a href="javascript:void(0);" onclick="openPopup('/popup-content?id=<%= user.direccion_ftp %>')" class="btn btn-primary">ABRIR LINK</a>
+
+
+
                     <% } %>
                   </td>
+ 
+                
+                <script>
+                    function openPopup(url) {
+                        const popup = window.open('', 'popupWindow', 'width=9000,height=9000,scrollbars=no,toolbar=no,menubar=no,location=no,status=no');
+                
+                        // Escribir el contenido del iframe en la nueva ventana emergente
+                        popup.document.open();
+                        popup.document.write(`
+                            <!DOCTYPE html>
+                            <html lang="en">
+                            <head>
+                                <meta charset="UTF-8">
+                                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                <title>Popup Content</title>
+                                <style>
+                                    body, html {
+                                        margin: 0;
+                                        padding: 0;
+                                        height: 100%;
+                                        width: 100%;
+                                        overflow: hidden; /* Evita que aparezcan barras de desplazamiento */
+                                    }
+                                    iframe {
+                                        border: none;
+                                        width: 100%;
+                                        height: 100%; /* El iframe ocupa todo el espacio */
+                                    }
+                                </style>
+                            </head>
+                            <body>
+                                <iframe src="${url}" frameborder="0"></iframe>
+                            </body>
+                            </html>
+                        `);
+                        popup.document.close();
+                    }
+                </script>
+                
+                
+                
+
+
+
+
+
+
+
+                </td>
+
+
+
+
                 </tr> 
               <% }) %>             
             </tbody>

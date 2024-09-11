@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popup</title>
+    <style>
+        body { margin: 0; }
+        iframe { border: none; width: 100vw; height: 100vh; }
+    </style>
+</head>
+<body>
+    <iframe id="contentFrame"></iframe>
+    <script>
+        // Obtén la URL del contenido del parámetro de consulta
+        const urlParams = new URLSearchParams(window.location.search);
+        const contentUrl = urlParams.get('url');
+        
+        // Si la URL es válida, carga el contenido en el iframe
+        if (contentUrl) {
+            document.getElementById('contentFrame').src = contentUrl;
+        }
+    </script>
+</body>
+</html>

@@ -1350,6 +1350,77 @@ router.get('/link', authControllers.isAuthenticate, (req, res) => {
     }
 });
 
+router.get('/popup-content', authControllers.isAuthenticate, (req, res) => {
+    const id = req.query.id; // Obtiene el ID del reporte desde los parámetros de la URL
+    const reporteLink = id; // Usa el ID del reporte directamente como el link
+    const filename = `${id}`; // Asigna el nombre real del archivo, si es posible obtenerlo dinámicamente
+    const fecha_accion = new Date(); // Fecha actual
+    let ip_usuario = req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress; // Obtén la IP del usuario
+    
+    console.log("ID del reporte:", id);
+    console.log("Reporte Link:", reporteLink);
+    console.log("Nombre del archivo:", filename);
+    console.log("Fecha de la acción:", fecha_accion);
+    console.log("IP del usuario:", ip_usuario);
+
+    // Elimina la parte '::ffff:' si está presente en la IP
+    if (ip_usuario && ip_usuario.startsWith('::ffff:')) {
+        ip_usuario = ip_usuario.substring(7);
+    }
+
+    // Realiza la inserción en la base de datos antes de enviar la respuesta
+    conexion.query('INSERT INTO log_descargas SET ?', {
+        id_reporte: id, // Asegúrate de que este valor sea compatible con el tipo de datos de la columna
+        nombre_reporte: filename, // Nombre del reporte
+        accion: 'LINK', // Acción realizada
+        usuario: req.user.email, // Email del usuario, o 'anonimo' si no está disponible
+        fecha_accion: fecha_accion, // Fecha de la acción
+        ip_usuario: ip_usuario // IP del usuario
+    }, (error) => {
+        if (error) {
+            console.error('Error al registrar la descarga:', error);
+            return res.status(500).send('Error al registrar la descarga');
+        }
+
+        // Enviar la respuesta HTML solo si la inserción fue exitosa
+        res.send(`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Popup Content</title>
+                <style>
+                    body, html {
+                        margin: 0;
+                        padding: 0;
+                        height: 100%;
+                        width: 100%;
+                        overflow: hidden; /* Evita que aparezcan barras de desplazamiento */
+                    }
+                    iframe {
+                        border: none;
+                        width: 100%;
+                        height: 100%; /* Asegura que el iframe ocupe todo el espacio disponible 
+                        overflow: auto; /* Permite barras de desplazamiento dentro del iframe si es necesario */
+                        pointer-events: auto; /* Permite la interacción con el contenido del iframe */
+                    }
+                </style>
+            </head>
+            <body>
+                <iframe src="${reporteLink}" frameborder="0"></iframe>
+            </body>
+            </html>
+        `);
+    });
+});
+
+
+
+
+
+
+
 
 
 
