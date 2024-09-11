@@ -31,9 +31,9 @@
 		            
           <li class="nav-item">
             <a href="#" class="nav-link">                            
-              <i class="nav-icon fas fa-solid fa-list-check"></i>              
+              <i class="nav-icon fas fa-solid fa-folder-open"></i>              
               <p>
-                MOSTRAR
+                REPORTES
                 <i class="fas fa-angle-left right"></i>
               </p>
             </a>
@@ -43,22 +43,13 @@
                   <i class="far fa-circle nav-icon"></i>
                   <p>MIS REPORTES</p>
                 </a>
-              </li>   
-              
+              </li>                 
               <li class="nav-item">
                 <a href="/todo_reportes" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>TODOS LOS REPORTES</p>
                 </a>
               </li>   
-
-              <li class="nav-item">
-                <a href="/Acceso_reportes" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>ACCESO REPORTES</p>
-                </a>
-              </li>   
-
             </ul>
           </li>  
           <li class="nav-item">
@@ -73,19 +64,19 @@
               <li class="nav-item">
                 <a href="/inventarioReportes" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Reportes</p>
+                  <p>REPORTES</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="/inventarioTablas" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Tablas</p>
+                  <p>TABLAS</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="/inventarioProcesos" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Procesos</p>
+                  <p>PROCESOS</p>
                 </a>
               </li>
             </ul>
@@ -103,7 +94,7 @@
                 <a href="#" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>
-                    Netezza
+                    NETEZZA
                     <i class="right fas fa-angle-left"></i>
                   </p>
                 </a>
@@ -111,22 +102,40 @@
                   <li class="nav-item">
                     <a href="/monitorNetezzaConsultas_activas" class="nav-link">
                       <i class="far fa-dot-circle nav-icon"></i>
-                      <p>SESIONES</p>
+                      <p>sesiones</p>
                     </a>
                   </li>                  
                 </ul>
               </li>             
             </ul>
           </li>
+
+          <% if (userRol === 'Admin') { %>
           <li class="nav-item">
-            <a href="/users" class="nav-link">
-              <i class="nav-icon fas fa-duotone fa-solid fa-users"></i>
+            <a href="#" class="nav-link">                            
+              <i class="nav-icon fas fa-solid fa-user-tie"></i>              
               <p>
-                USUARIOS
-                <!-- <span class="badge badge-info right">2</span> -->
+                ADMINISTRADOR
+                <i class="fas fa-angle-left right"></i>
               </p>
             </a>
-          </li>  		  
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="/users" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>USUARIOS</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/Acceso_reportes" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>ACCESO REPORTES</p>
+                </a>
+              </li>              
+            </ul>
+          </li>  
+          <% } %>
+
           <li class="nav-item">
             <a href="/logout" class="nav-link">
               <i class="nav-icon fas fa-solid fa-right-from-bracket"></i>
