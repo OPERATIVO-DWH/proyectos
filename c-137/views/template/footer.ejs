@@ -203,24 +203,24 @@
   </script>
   
   <script>
-  const urlParams = new URLSearchParams(window.location.search);
-  const error = urlParams.get('error');
+  const urlParams2 = new URLSearchParams(window.location.search);
+  const error2 = urlParams2.get('error');
 
-  if (error === 'ARCHIVO_NO_ENCONTRADO') {
+  if (error2 === 'ARCHIVO_NO_ENCONTRADO') {
       Swal.fire({
           title: "ARCHIVO NO ENCONTRADO",
           icon: "error",
           confirmButtonColor: "#3085d6",
           confirmButtonText: "ACEPTAR"
       });
-  } else if (error === 'ERROR_DESCARGA') {
+  } else if (error2 === 'ERROR_DESCARGA') {
       Swal.fire({
           title: "ERROR AL DESCARGAR EL ARCHIVO",
           icon: "error",
           confirmButtonColor: "#3085d6",
           confirmButtonText: "ACEPTAR"
       });
-  } else if (error === 'NO_TIENE_PERMISO') {
+  } else if (error2 === 'NO_TIENE_PERMISO') {
       Swal.fire({
           title: "NO TIENES PERMISOS",
           icon: "error",

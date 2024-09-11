@@ -909,9 +909,10 @@ router.get('/download', authControllers.isAuthenticate, (req, res) => {
             SELECT DISTINCT
                 r.id,
                 r.reporte,
-                r.direccion_ftp 
+                r.direccion_ftp,
+                tipo_acceso 
             FROM 
-                monitor_ftp_control_h_0_copy_test r 
+                acceso_reportes r 
             ORDER BY 
                 r.id ASC
         `;
@@ -920,9 +921,10 @@ router.get('/download', authControllers.isAuthenticate, (req, res) => {
             SELECT DISTINCT
                 r.id,
                 r.reporte,
-                r.direccion_ftp 
+                r.direccion_ftp,
+                tipo_acceso 
             FROM 
-                monitor_ftp_control_h_0_copy_test r 
+                acceso_reportes r 
             WHERE 
                 r.usuario = ?
             ORDER BY 
@@ -967,7 +969,7 @@ router.get('/download', authControllers.isAuthenticate, (req, res) => {
                         result.isCurrentHour = currentHour === mtimeHour;
 
                     } catch (err) {
-                        console.error(`Error al obtener la fecha de última modificación para el archivo ${filePath}:`, err);
+                       // console.error(`Error al obtener la fecha de última modificación para el archivo ${filePath}:`, err);
                         result.mtime = 'No disponible';
                         result.isToday = false;
                         result.isCurrentHour = false;
@@ -1133,7 +1135,7 @@ router.get('/todo_reportes', authControllers.isAuthenticate, (req, res) => {
                 r.reporte,
                 r.direccion_ftp 
             FROM 
-                monitor_ftp_control_h_0_copy_test r 
+                acceso_reportes r 
             ORDER BY 
                 r.id ASC
         `;
@@ -1144,7 +1146,7 @@ router.get('/todo_reportes', authControllers.isAuthenticate, (req, res) => {
                 r.reporte,
                 r.direccion_ftp 
             FROM 
-                monitor_ftp_control_h_0_copy_test r 
+                acceso_reportes r 
             ORDER BY 
                 r.id ASC
         `;
@@ -1178,7 +1180,7 @@ router.get('/todo_reportes', authControllers.isAuthenticate, (req, res) => {
                         result.isToday = today === mtimeDate;
 
                     } catch (err) {
-                        console.error(`Error al obtener la fecha de última modificación para el archivo ${filePath}:`, err);
+                        //console.error(`Error al obtener la fecha de última modificación para el archivo ${filePath}:`, err);
                         result.mtime = 'No disponible';
                         result.isToday = false;
                     }
@@ -1205,19 +1207,12 @@ router.get('/Acceso_reportes', authControllers.isAuthenticate, (req, res) => {
     if (req.user.rol === "Admin") {
         query = `
             SELECT 
-                id, direccion_ftp, reporte, usuario ,fecha_modificacion
-            FROM monitor_ftp_control_h_0_copy_test
+                id, direccion_ftp, reporte, usuario ,fecha_modificacion,tipo_acceso
+            FROM acceso_reportes
             ORDER BY id ASC
         `;
     } else if (req.user.rol === "Suscriptor") {
-        query = `
-            SELECT 
-                id, direccion_ftp, reporte, usuario ,fecha_modificacion
-            FROM monitor_ftp_control_h_0_copy_test
-            WHERE usuario = ?
-            ORDER BY id ASC
-        `;
-        queryParams = [req.user.email];
+        res.render('index', { userName: req.user.email, titleweb: 'Inicio' });
     }
 
     conexion.query(query, queryParams, (error, results) => {
@@ -1232,12 +1227,15 @@ router.get('/Acceso_reportes', authControllers.isAuthenticate, (req, res) => {
     });
 });
 
+
+
+
  
 router.get('/Acceso_reportes_Edit/:id', authControllers.isAuthenticate, (req, res) => {
     const id = req.params.id;
 
-    // Asegúrate de que 'id' es el nombre correcto de la columna en la tabla 'monitor_ftp_control_h_0_copy_test'
-    conexion.query('SELECT id, reporte, direccion_ftp, usuario,DATE_FORMAT(fecha_modificacion, \'%Y-%m-%d %H:%i:%s\')as fecha_modificacion FROM monitor_ftp_control_h_0_copy_test WHERE id = ?', [id], (error, results) => {
+    // Asegúrate de que 'id' es el nombre correcto de la columna en la tabla 'acceso_reportes'
+    conexion.query('SELECT id, reporte, direccion_ftp, usuario,tipo_acceso,DATE_FORMAT(fecha_modificacion, \'%Y-%m-%d %H:%i:%s\')as fecha_modificacion FROM acceso_reportes WHERE id = ?', [id], (error, results) => {
         if (error) {
             console.error('Error en la consulta SQL:', error);
             return res.status(500).send('Error en la consulta SQL');
@@ -1286,7 +1284,7 @@ router.get('/deleteAcceso/:id', authControllers.isAuthenticate, (req, res) => {
 
     // Verificar si el usuario tiene el rol de Admin
     if (req.user.rol === "Admin") {
-        conexion.query('DELETE FROM monitor_ftp_control_h_0_copy_test WHERE id = ?', [id], (error, results) => {
+        conexion.query('DELETE FROM acceso_reportes WHERE id = ?', [id], (error, results) => {
             if (error) {
                 throw error;
             } else {
@@ -1299,6 +1297,60 @@ router.get('/deleteAcceso/:id', authControllers.isAuthenticate, (req, res) => {
         res.redirect('/Acceso_reportes?error=NO_TIENE_PERMISO');
     }
 });
+
+
+
+router.get('/link', authControllers.isAuthenticate, (req, res) => {
+    if (req.user.rol === "Admin" || req.user.rol === "Suscriptor") {
+        const id = req.query.id; // Obtiene el ID del reporte desde los parámetros de la URL
+        const reporteLink = id; // Usa el ID del reporte directamente como el link
+        const filename = 'nombre_del_reporte'; // Asigna el nombre real del archivo, si es posible obtenerlo dinámicamente
+        const fecha_accion = new Date(); // Fecha actual
+        let ip_usuario = req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress; // Obtén la IP del usuario
+
+        // Elimina la parte '::ffff:' si está presente
+        if (ip_usuario && ip_usuario.startsWith('::ffff:')) {
+            ip_usuario = ip_usuario.substring(7);
+        }
+
+        console.log('Enlace del reporte:', reporteLink); // Log del link generado para el reporte
+
+        // Realiza la inserción en la base de datos antes de redirigir
+        conexion.query('INSERT INTO log_descargas SET ?', {
+            id_reporte: id, // Asegúrate de que este valor sea compatible con el tipo de datos de la columna
+            nombre_reporte: filename, // Nombre del reporte
+            accion: 'LINK', // Acción realizada
+            usuario: req.user.email, // Email del usuario
+            fecha_accion: fecha_accion, // Fecha de la acción
+            ip_usuario: ip_usuario // IP del usuario
+        }, (error) => {
+            if (error) {
+                console.error('Error al registrar la descarga:', error);
+                // Maneja el error si ocurre, pero continúa con la redirección
+            }
+
+            // Verifica si el reporteLink comienza con "https://"
+            if (!reporteLink.startsWith('https://')) {
+                console.error('Enlace no seguro:', reporteLink);
+                return res.redirect('/download?error=ARCHIVO_NO_ENCONTRADO');
+            }
+
+            // Solo redirige si el reporteLink es válido
+            if (reporteLink) {
+                // Redirige al enlace del reporte directamente después de registrar la descarga
+                return res.redirect(reporteLink);
+            } else {
+                // Si no hay reporte, redirige a la página de descargas
+                return res.redirect('/download');
+            }
+        });
+    } else {
+        // Si el rol no es Admin o Suscriptor, redirige a la página de descargas
+        return res.redirect('/download');
+    }
+});
+
+
 
 
 module.exports = router;

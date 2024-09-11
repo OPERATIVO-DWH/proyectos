@@ -15,7 +15,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="reporte" class="form-label">Reporte</label>
+                            <label for="reporte" class="form-label">Reporte o Link</label>
                             <input type="text" class="form-control" id="reporte" name="reporte" value="<%= user.reporte %>" required>
                         </div>
                     </div>
@@ -31,6 +31,16 @@
                             <input type="text" class="form-control" id="usuario" name="usuario" value="<%= user.usuario %>" required>
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="tipo_acceso" class="form-label">Tipo Acceso</label>
+                            <select class="form-control" id="tipo_acceso" name="tipo_acceso" tabindex="4" required>
+                                <option value="link" <%= user.tipo_acceso === 'link' ? 'selected' : '' %>>LINK</option>
+                                <option value="descarga" <%= user.tipo_acceso === 'descarga' ? 'selected' : '' %>>DESCARGA</option>
+                            </select>
+                        </div>
+                        
+                    </div> 
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="fecha_modificacion" class="form-label">Fecha Modificación</label>

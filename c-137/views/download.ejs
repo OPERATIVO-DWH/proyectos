@@ -1,5 +1,6 @@
-<%- include("template/header")%>
-<%- include("template/navbar")%>
+
+<%- include("template/header") %>
+<%- include("template/navbar") %>
 <%- include("template/aside") %>
 
 <!-- Content Wrapper. Contains page content -->
@@ -11,54 +12,50 @@
   <section class="content">
     <div class="container-fluid">
       
-    <div class="card card-info card-outline">
+      <div class="card card-info card-outline">
         <div class="card-body">
+          
+          <table id="example1" class="table table-striped mt-4 table-responsive">
+            <thead class="table-dark">
+              <tr>
+                <th scope="col">#ID</th>
+                <th scope="col">REPORTE</th>
+                <th scope="col">ESTADO</th>
+                <th scope="col">FECHA ACTUALIZACION</th>
+                <th scope="col">TIPO_ACCESO</th>
+                <th scope="col">ACCIÓN</th>           
+              </tr>
+            </thead>
             
-          
-            <table id="example1" class="table table-striped mt-4 table-responsive">
-              <thead class="table-dark">
+            <tbody>
+              <% results.forEach((user) => { %>
                 <tr>
-                  <th scope="col">#ID</th>
-                  <th scope="col">REPORTE</th>
-                  <th scope="col">ESTADO</th>
-                  <th scope="col">FECHA ACTUALIZACION</th>
-                 <!-- <th scope="col">ABRIR</th>-->
-                  <th scope="col">DESCARGAR</th>           
-                </tr>
-              </thead>
+                  <td><%= user.id %></td>
+                  <td><%= user.reporte %></td>
+                  <td class="text-center">
+                    <span class="badge <%= user.isToday ? 'bg-success' : 'bg-danger' %>">
+                      <%= user.isToday ? 'OK' : 'NOOK' %>
+                    </span>
+                  </td>
+                  <td><%= user.mtime %></td>
+                  <td><%= user.tipo_acceso %></td>
+                  <td>
+                    <% if (user.tipo_acceso === 'descarga') { %>
+                      <a href="/download_file?id=<%= user.reporte %>&ftp=<%= encodeURIComponent(user.direccion_ftp) %>" class="btn btn-primary">DESCARGAR</a>
+                    <% } else { %>
+                      <a href="/link?id=<%= user.reporte %>" class="btn btn-primary" target="_blank">LINK</a>
+                    <% } %>
+                  </td>
+                </tr> 
+              <% }) %>             
+            </tbody>
+          </table>
           
-             
-          
-              <tbody>
-                <% results.forEach((user) => { %>
-                  <tr>
-                    <td><%= user.id %></td>
-                    <td><%= user.reporte %></td>
-                    <td class="text-center">
-                      <span class="badge <%= user.isToday ? 'bg-success' : 'bg-danger' %>">
-                        <%= user.isToday ? 'OK' : 'NOOK' %>
-                      </span>
-                    </td>
-                    <td><%= user.mtime %></td>
-                  <!--   <td>   
-                      <a href="/abrir_file?id=<%= user.reporte %>&ftp=<%= encodeURIComponent(user.direccion_ftp) %>" class="btn btn-primary">ABRIR</a>                          
-                    </td>-->
-                    <td>   
-                      <a href="/download_file?id=<%= user.reporte %>&ftp=<%= encodeURIComponent(user.direccion_ftp) %>" class="btn btn-primary">DESCARGAR</a>                         
-                    </td>
-                  </tr> 
-                <% }) %>             
-              </tbody>
-            </table>
-          
-          
-                           
         </div><!-- /.card-body -->
-    </div>
-</div><!-- /.container-fluid -->
-</section>
-<!-- /.content -->
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
 <%- include("template/footer") %>
-
