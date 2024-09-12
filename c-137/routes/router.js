@@ -1415,7 +1415,118 @@ router.get('/popup-content', authControllers.isAuthenticate, (req, res) => {
     });
 });
 
+// para direccionar a dpi.ejs
+router.get('/dpi', authControllers.isAuthenticate,(req, res) => {
+    //const id = req.params.id;
 
+    //const express = require('express');
+    const { executeSSHCommand } = require('../src/ssh/ssh-connect');
+    const { executeSSHCommand2 } = require('../src/ssh/ssh-connect-dpi-2');
+    
+    const app = express();
+    //const bb = 'Hola'
+        
+      executeSSHCommand((err, result) => {
+        if (err) {
+          return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+        }        
+        //res.render('dpi', {result})
+        //res.render('dpi', {bb})
+        executeSSHCommand2((err, result2) => {
+            if (err) {
+              return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+            }        
+            res.render('dpi', {result, result2, userName: req.user.email, userRol: req.user.rol})            
+        });    
+      });
+    
+    //res.render('dpi', {bb})   
+}); 
+
+// para direccionar a dataStage-11-7.ejs
+router.get('/dataStage-11-7', authControllers.isAuthenticate,(req, res) => {
+
+    const { executeSSHCommand } = require('../src/ssh/ssh-connect-ds-11-7');
+    const { executeSSHCommand2 } = require('../src/ssh/ssh-connect-ds-11-7-2');
+    
+    const app = express();
+        
+      executeSSHCommand((err, result) => {
+        if (err) {
+          return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+        }        
+        executeSSHCommand2((err, result2) => {
+            if (err) {
+              return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+            }        
+            res.render('dataStage-11-7', {result, result2, userName: req.user.email, userRol: req.user.rol})            
+        });    
+      });    
+}); 
+
+// para direccionar a pentaho.ejs
+router.get('/pentaho', authControllers.isAuthenticate,(req, res) => {
+
+    const { executeSSHCommand } = require('../src/ssh/ssh-connect-pentaho-13');
+    const { executeSSHCommand2 } = require('../src/ssh/ssh-connect-pentaho-13-2');
+    
+    const app = express();
+        
+      executeSSHCommand((err, result) => {
+        if (err) {
+          return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+        }        
+        executeSSHCommand2((err, result2) => {
+            if (err) {
+              return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+            }        
+            res.render('pentaho', {result, result2, userName: req.user.email, userRol: req.user.rol})            
+        });    
+      });    
+}); 
+
+// para direccionar a voneRpl.ejs
+router.get('/voneRpl', authControllers.isAuthenticate,(req, res) => {
+
+    const conexion2 = require('../database/db-vone-rpl')
+
+    conexion2.query('select min(timestamp) as min_fecha, max(timestamp) as max_fecha from record.charge_record', (error, results1) => {
+        if(error){
+        throw error;
+        } else {    
+            conexion2.query('select min(end_timestamp) as min_fecha, max(end_timestamp) as max_fecha from record.session_record', (error, results2) => {
+                if(error){
+                throw error;
+                } else {    
+                    if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
+                        res.render('voneRpl', {datos2 : results2 [0], datos1 : results1 [0], userName: req.user.email, userRol: req.user.rol})                        
+                    } else {
+                        res.render('index', { userName: req.user.email, titleweb: "Inicio" });
+                    }            
+                }
+            })
+        }    
+    })
+}); 
+
+// para direccionar a storageVivaTePresta.ejs
+router.get('/storageVivaTePresta', authControllers.isAuthenticate,(req, res) => {
+
+    const conexion2 = require('../database/db-storage-viva-te-presta')
+
+    conexion2.query('SELECT recharge_date, COUNT(1) AS total_recharges FROM storage.recharge_day WHERE TIMESTAMP >= NOW() - INTERVAL 7 DAY GROUP BY recharge_date ORDER BY recharge_date DESC', (error, results1) => {
+        if(error){
+        throw error;
+        } else {                
+            if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
+                const user1 = Array.isArray(results1) ? results1 : [];
+                res.render('storageVivaTePresta', {datos1 : user1, userName: req.user.email, userRol: req.user.rol})                        
+            } else {
+                res.render('index', { userName: req.user.email, titleweb: "Inicio" });
+            }                               
+        }    
+    })
+}); 
 
 
 

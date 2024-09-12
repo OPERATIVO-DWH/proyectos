@@ -1,0 +1,64 @@
+  <%- include("template/header")%>
+  <%- include("template/navbar")%>
+  <%- include("template/aside") %>
+  <!-- Content Wrapper. Contains page content -->
+
+  <div class="content-wrapper"> 
+    <%- include('template/breadcrumb', { module: 'VONE Replica', module1: 'SERVIDORES BD / VONE Replica' }) %>
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="card card-info card-outline">
+          <!-- <div class="card-header">
+            <h3 class="card-title">Icons</h3>
+          </div> /.card-body -->
+          <div class="card-body">
+            <a href="/inventarioReportesCreate" class="btn btn-primary mt-4 mb-2">NUEVO <i class="fa-solid fa-square-plus"></i></a>
+
+            <table id="example1" class="table table-striped mt-4 table-responsive">
+              <thead class="table-dark">
+                <tr>
+                  <th scope="col" colspan="2" ><center>MTRs</center></th>                  
+                </tr>
+                <tr>
+                  <th scope="col">Fecha Minima</th>
+                  <th scope="col">Fecha Maxima</th>                  
+                </tr>
+              </thead>
+              <tbody>                  
+                <tr>
+                  <td><%= new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date(datos1.min_fecha)) %>
+                  </td>                                                
+                  <td><%= new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date(datos1.max_fecha)) %></td>
+                </tr>                                   
+              </tbody>
+            </table>            
+            
+            <table id="example1" class="table table-striped mt-4 table-responsive">
+              <thead class="table-dark">
+                <tr>
+                  <th scope="col" colspan="2" ><center>TRÁFICO</center></th>                  
+                </tr>
+                <tr>
+                  <th scope="col">Fecha Minima</th>
+                  <th scope="col">Fecha Maxima</th>                  
+                </tr>
+              </thead>
+              <tbody>                  
+                <tr>
+                  <td><%= new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date(datos2.min_fecha)) %></td>                                                
+                  <td><%= new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date(datos2.max_fecha)) %></td>
+                </tr>                   
+              </tbody>
+            </table>            
+                    
+          </div><!-- /.card-body -->
+
+        </div>
+      </div><!-- /.container-fluid -->
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+  <%- include("template/footer") %>
