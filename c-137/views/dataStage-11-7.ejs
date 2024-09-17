@@ -1,0 +1,55 @@
+  <%- include("template/header")%>
+  <%- include("template/navbar")%>
+  <%- include("template/aside") %>
+  <!-- Content Wrapper. Contains page content -->
+
+  <div class="content-wrapper"> 
+    <%- include('template/breadcrumb', { module: 'DATASTAGE 11.7', module1: 'SERVIDORES BD / DATASTAGE 11.7' }) %>
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="card card-info card-outline">
+          <!-- <div class="card-header">
+            <h3 class="card-title">Icons</h3>
+          </div> /.card-body -->
+          <div class="card-body">
+            <a href="/inventarioReportesCreate" class="btn btn-primary mt-4 mb-2">NUEVO <i class="fa-solid fa-square-plus"></i></a>
+
+            <table id="example1" class="table table-striped mt-4 table-responsive">
+              <thead class="table-dark">
+                <tr>
+                  <th scope="col">JOBS Ejecutandose</th>
+                  <!-- <th scope="col">ESTADO</th> -->                  
+                </tr>
+              </thead>
+              <tbody>                  
+                <tr>
+                  <td><pre><%= result %></pre></td>                                                
+                </tr>                                   
+              </tbody>
+            </table>            
+            
+            <table id="example1" class="table table-striped mt-4 table-responsive">
+              <thead class="table-dark">
+                <tr>
+                  <th scope="col">Espacio en las particiones</th>
+                  <!-- <th scope="col">ESTADO</th> -->                  
+                </tr>
+              </thead>
+              <tbody>                  
+                <tr>
+                  <td><pre><%= result2 %></pre></td>                                                
+                </tr>                   
+              </tbody>
+            </table>            
+                    
+          </div><!-- /.card-body -->
+
+        </div>
+      </div><!-- /.container-fluid -->
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+  <%- include("template/footer") %>
