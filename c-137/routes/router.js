@@ -1443,6 +1443,39 @@ router.get('/dpi', authControllers.isAuthenticate,(req, res) => {
     //res.render('dpi', {bb})   
 }); 
 
+// para direccionar a dpi.ejs   KILL
+router.post('/dpiKill', authControllers.isAuthenticate,(req, res) => {
+    const id_process = req.body.numero; //req.params.numero;
+    //res.send('¡Hola, este es un texto simple desde Node.js!');
+    //res.send(id_process);
+    
+    const { executeSSHCommand } = require('../src/ssh/ssh-connect');
+    const { executeSSHCommand2 } = require('../src/ssh/ssh-connect-dpi-2');
+    const { executeSSHCommand3 } = require('../src/ssh/ssh-connect-dpi-3-kill');
+    
+    const app = express();    
+
+    executeSSHCommand3((err, result2) => {
+        if (err) {
+        return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+        }        
+        //res.render('dpi', {result, result2, userName: req.user.email, userRol: req.user.rol, id_process: id_process})            
+    }, id_process);    
+
+      executeSSHCommand((err, result) => {
+        if (err) {
+          return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+        }                        
+        executeSSHCommand2((err, result2) => {
+            if (err) {
+              return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+            }        
+            res.render('dpi', {result, result2, userName: req.user.email, userRol: req.user.rol, id_process: id_process})            
+        });    
+      });
+          
+}); 
+
 // para direccionar a dataStage-11-7.ejs
 router.get('/dataStage-11-7', authControllers.isAuthenticate,(req, res) => {
 
