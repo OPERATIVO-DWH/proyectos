@@ -1417,15 +1417,12 @@ router.get('/popup-content', authControllers.isAuthenticate, (req, res) => {
 
 // para direccionar a dpi.ejs
 router.get('/dpi', authControllers.isAuthenticate,(req, res) => {
-    //const id = req.params.id;
-
-    //const express = require('express');
+    //const id = req.params.id;    
     const { executeSSHCommand } = require('../src/ssh/ssh-connect');
     const { executeSSHCommand2 } = require('../src/ssh/ssh-connect-dpi-2');
     
     const app = express();
-    //const bb = 'Hola'
-        
+    //const bb = 'Hola'        
       executeSSHCommand((err, result) => {
         if (err) {
           return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
@@ -1483,7 +1480,43 @@ router.get('/dataStage-11-7', authControllers.isAuthenticate,(req, res) => {
     const { executeSSHCommand2 } = require('../src/ssh/ssh-connect-ds-11-7-2');
     
     const app = express();
-        
+          
+    executeSSHCommand((err, result) => {
+    if (err) {
+        return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+    }        
+    executeSSHCommand2((err, result2) => {
+        if (err) {
+            return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+        }        
+        res.render('dataStage-11-7', {result, result2, userName: req.user.email, userRol: req.user.rol})            
+    });    
+    });    
+}); 
+
+// para direccionar a dataStage-11-7.ejs
+router.post('/dataStage-11-7', authControllers.isAuthenticate,(req, res) => {
+    const id_process = req.body.numero;     
+
+    const { executeSSHCommand } = require('../src/ssh/ssh-connect-ds-11-7');
+    const { executeSSHCommand2 } = require('../src/ssh/ssh-connect-ds-11-7-2');
+    const { executeSSHCommand3 } = require('../src/ssh/ssh-connect-ds-11-7-3-kill');
+    
+    const app = express();
+
+    if (!id_process || id_process === '') { // cuando la variable es vacia o nula
+        //res.send('¡Hola, este es un texto simple desde Node.js!');
+        //res.send(id_process);        
+    }
+    else {
+        executeSSHCommand3((err, result2) => {
+            if (err) {
+            return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+            }        
+            //res.render('dpi', {result, result2, userName: req.user.email, userRol: req.user.rol, id_process: id_process})            
+        }, id_process);    
+    }
+            
       executeSSHCommand((err, result) => {
         if (err) {
           return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
@@ -1492,10 +1525,11 @@ router.get('/dataStage-11-7', authControllers.isAuthenticate,(req, res) => {
             if (err) {
               return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
             }        
-            res.render('dataStage-11-7', {result, result2, userName: req.user.email, userRol: req.user.rol})            
+            res.render('dataStage-11-7', {result, result2, userName: req.user.email, userRol: req.user.rol, id_process: id_process})            
         });    
       });    
 }); 
+
 
 // para direccionar a pentaho.ejs
 router.get('/pentaho', authControllers.isAuthenticate,(req, res) => {
