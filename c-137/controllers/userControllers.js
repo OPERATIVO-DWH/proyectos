@@ -444,7 +444,7 @@ exports.updateFecha = async (req, res) => {
         );
 
         // Ruta del archivo Python que quieres ejecutar
-        const pythonScriptPath = path.join('C:', 'Users', 'jusmartinez', 'Documents', 'proyectos', 'jira', 'jira_mysql_a1.py');
+        const pythonScriptPath = path.join('E:', 'proyectos', 'jira', 'jira_mysql_a1.py');
 
         // Ejecutar el script de Python
         exec(`python "${pythonScriptPath}"`, async (error, stdout, stderr) => {
