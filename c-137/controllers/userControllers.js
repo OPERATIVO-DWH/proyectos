@@ -443,8 +443,8 @@ exports.updateFecha = async (req, res) => {
             [date_ini, date_fin, usuario, fecha_insert, ip_insert, id]
         );
 
-        // Ruta del archivo Python que quieres ejecutar
-        const pythonScriptPath = path.join('E:', 'proyectos', 'jira', 'jira_mysql_a1.py');
+        // Ruta del archivo Python que quieres ejecutar (nueva ruta en C:\proyectos\jira)
+        const pythonScriptPath = path.join('C:', 'proyectos', 'jira', 'jira_mysql_a1.py');
 
         // Ejecutar el script de Python
         exec(`python "${pythonScriptPath}"`, async (error, stdout, stderr) => {
@@ -473,6 +473,7 @@ exports.updateFecha = async (req, res) => {
         res.status(500).send('Error en la actualización de la base de datos');
     }
 };
+
 
 
 
