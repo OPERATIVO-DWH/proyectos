@@ -1,5 +1,6 @@
 // invoca a la base de datos mysql
 const conexion = require('../database/db')
+
 // procesure para guardar
 exports.saveUser = (req,res) => {
     const email = req.body.email
@@ -408,4 +409,72 @@ exports.saveAcceso = async (req, res) => {
         res.status(500).send('Error en el servidor');
     }
 };
+
+const conexion_jira = require('../database/db_jira');
+const { exec } = require('child_process');
+const path = require('path');
+
+// Procedimiento para actualizar la fecha y ejecutar el script Python
+exports.updateFecha = async (req, res) => {
+    try {
+        const id = req.body.id;
+        const date_ini = req.body.date_ini;
+        const date_fin = req.body.date_fin;
+        const usuario = req.body.usuario;
+
+        // Verificar si el proceso ya está en ejecución
+        const [rows] = await conexion_jira.query('SELECT en_ejecucion FROM jira_date_created WHERE id = ?', [id]);
+        
+        if (rows.length > 0 && rows[0].en_ejecucion) {
+            // Si ya está en ejecución, evitar la doble ejecución
+            return res.status(400).send('El proceso de lectura de JIRA ya está en ejecución.');
+        }
+
+        // Actualizar el estado a "en ejecución"
+        await conexion_jira.query('UPDATE jira_date_created SET en_ejecucion = TRUE WHERE id = ?', [id]);
+
+        // Obtener la hora del sistema y la IP del cliente
+        const fecha_insert = new Date();
+        const ip_insert = req.connection.remoteAddress;
+
+        // Realizar la actualización en la base de datos
+        await conexion_jira.query(
+            'UPDATE jira_date_created SET date_ini = ?, date_fin = ?, usuario = ?, fecha_insert = ?, ip_insert = ? WHERE id = ?',
+            [date_ini, date_fin, usuario, fecha_insert, ip_insert, id]
+        );
+
+        // Ruta del archivo Python que quieres ejecutar (nueva ruta en C:\proyectos\jira)
+        const pythonScriptPath = path.join('C:', 'proyectos', 'jira', 'jira_mysql_a1.py');
+
+        // Ejecutar el script de Python
+        exec(`python "${pythonScriptPath}"`, async (error, stdout, stderr) => {
+            if (error) {
+                console.error(`Error ejecutando el script Python: ${error.message}`);
+                // En caso de error, actualizar el estado a "no en ejecución"
+                await conexion_jira.query('UPDATE jira_date_created SET en_ejecucion = FALSE WHERE id = ?', [id]);
+                return res.status(500).send('Error ejecutando el script Python');
+            }
+
+            if (stderr) {
+                console.error(`Error en el script Python: ${stderr}`);
+            }
+
+            console.log(`Resultado del script Python: ${stdout}`);
+
+            // Una vez que el script finaliza, actualizar el estado a "no en ejecución"
+            await conexion_jira.query('UPDATE jira_date_created SET en_ejecucion = FALSE WHERE id = ?', [id]);
+
+            // Redirigir después de la ejecución exitosa del script
+            res.redirect('/monitorJira');
+        });
+
+    } catch (error) {
+        console.error('Error en la actualización:', error);
+        res.status(500).send('Error en la actualización de la base de datos');
+    }
+};
+
+
+
+
 
