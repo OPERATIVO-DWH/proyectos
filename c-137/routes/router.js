@@ -3,7 +3,8 @@ const express = require('express')
 const router = express.Router()
 // invoca a la base de datos mysql
 const conexion = require('../database/db')
-const cxNetezza = require('../database/netezza_db');
+const cxNetezza = require('../database/netezza_db')
+const conexion_jira = require('../database/db_jira')
 
 //invoca el metodo CRUD de usuarios
 const userControllers = require('../controllers/userControllers')
@@ -190,21 +191,8 @@ router.get('/inventarioReportesEdit/:id', authControllers.isAuthenticate,(req, r
 });  
 
 
-
-
-
-
-
-
-
 router.post('/saveRepor', userControllers.saveRepor); 
 router.post('/updateRepor', userControllers.updateRepor); 
-
-
-
-
- 
-
 
 
 // Para el delete reporte
@@ -312,7 +300,6 @@ router.get('/deleteTablas/:id', authControllers.isAuthenticate, (req, res) => {
 });
 
 // direcciona inventario PROCESOS
-
 router.get('/inventarioProcesos', authControllers.isAuthenticate, (req, res) => {
     if(req.user.rol === "Suscriptor" || req.user.rol === "Admin") {
         // Supongamos que quieres obtener la lista de usuarios para el reporte de inventario
@@ -1257,7 +1244,7 @@ router.get('/Acceso_reportes_Edit/:id', authControllers.isAuthenticate, (req, re
 
   
 router.post('/saveTablas', userControllers.saveTablas); 
-router.post('/updateTablas', userControllers.updateRepor);  
+router.post('/updateTablas', userControllers.updateTablas);  
 router.post('/Acceso_reportes_Edit', userControllers.Acceso_reportes_Edit); 
 router.post('/updateAcesso_reporte',  userControllers.updateAcesso_reporte);
 
@@ -1562,9 +1549,75 @@ router.get('/storageVivaTePresta', authControllers.isAuthenticate,(req, res) => 
 }); 
 
 
+// Ruta para direccionar a JIRA.ejs
+router.get('/monitorJira', authControllers.isAuthenticate, async (req, res) => {
+    try {
+        // Consulta para obtener fechas
+        const queryFecha = `
+            SELECT f.id,f.date_ini,f.date_fin,case when f.en_ejecucion=1 then 'EN EJECUCION' ELSE 'DISPONIBLE' END en_ejecucion FROM jira_date_created f
+        `;
 
+        const queryIssue = `
+            SELECT
+            CASE WHEN j.created IS NULL then 'no' ELSE j.created END CREADO,
+            j.status_name ESTADO,
+            j.issue_key ISSUE,
+            j.assignee_email ASIGNADO,
+            j.summary TITULO,
+            -- j.customfield_10121,
+            -- j.timetracking_timeSpent,
+            j.issuelinks_inwardIssue ESCALADO,
+            j.inwardIssue_key ISSUE_ESCALADO,
+            h.assignee_email ASIGNADO_ESCALADO,
+            h.status_name ESTADO_ESCALADO,
+            h.customfield_10121 TIEMPO_SOLUCION,
+            h.timetracking_timeSpent TIEMPO_SOLUCION_2,
+            CONCAT('https://salamancasolutions.atlassian.net/issues/', j.issue_key) AS LINK,
+            "https://salamancasolutions.atlassian.net/jira/software/c/projects/NTSUP24/issues" AS link_incidencias,
+            case 
+            when j.issuelinks_inwardIssue=0 then 'bg-danger'
+            when j.issuelinks_inwardIssue=1 AND h.status_name IN ('Finalizada')  then 'bg-success'
+            when j.issuelinks_inwardIssue=1 AND h.status_name NOT IN ('Finalizada') then 'bg-warning'  
+            else 'bg-light text-muted'
+            end cod
+            FROM
+            jira_issues_op j
+            LEFT JOIN jira_issues_op h ON j.inwardIssue_key = h.issue_key
+            WHERE 
+            j.assignee_email IN ('Justo Fernando Martinez Rivera','Justo Fernando Martinez Rivera','jhonny Balderrama Guzman','Juan Carlos Balderrama','Jose Villanueva')
+            AND j.status_name NOT IN ('Finalizada','Resolved-Validation Pending')
+            ORDER BY 
+            j.issuelinks_inwardIssue ASC,
+            h.status_name DESC;
 
+        `;
 
+        // Usar las consultas con promesas
+        const [fecha] = await conexion_jira.query(queryFecha); 
+        const [issue] = await conexion_jira.query(queryIssue);
+
+        // Verificación de roles y renderizado de la vista
+        if (req.user.rol === "Admin") {
+            res.render('monitorJira', {                
+                fecha: fecha,    // Lista de fechas
+                issue: issue,    // Lista de issues                          
+                userName: req.user.email, // Nombre de usuario
+                userRol: req.user.rol
+            });
+        } else {
+            res.render('index', { 
+                userName: req.user.email, 
+                titleweb: "Inicio" 
+            });
+        }
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
+router.post('/updateFecha', userControllers.updateFecha); 
 
 
 

@@ -1,0 +1,139 @@
+<%- include("template/header") %>
+<%- include("template/navbar") %>
+<%- include("template/aside")%>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">        
+  <%- include('template/breadcrumb', { module: 'JIRA', module1: ' MONITOR / JIRA' }) %>
+
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">                       
+        <div class="row">
+          <div class="col-md-12">            
+            <div class="card callout callout-success card-outline ">                
+                <div class="card-header">
+                  <h3 class="card-title">Fechas de Ejecucion</h3>
+                </div>
+                <div class="card-body">
+                    <form action="/updateFecha" method="POST">                    
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="fecha_ini" class="form-select">FECHA INICIO:</label>
+                                <div class="input-group date" id="reservationdate1" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input" id="fecha_ini" name="date_ini" data-target="#reservationdate1" value="<%= fecha[0].date_ini.toISOString().split('T')[0] %>"/>
+                                    <div class="input-group-append" data-target="#reservationdate1" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="date_fin" class="form-select">FECHA FIN:</label>
+                                <div class="input-group date" id="reservationdate2" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input" id="date_fin" name="date_fin" data-target="#reservationdate2" value="<%= fecha[0].date_fin.toISOString().split('T')[0] %>"/>
+                                    <div class="input-group-append" data-target="#reservationdate2" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="mb-3">
+                                    <label for="id_name" class="form-select">ID</label>
+                                    <select class="custom-select rounded-0" id="id" name="id" class="form-select">
+                                        <option value="<%= fecha[0].id %>" selected><%= fecha[0].id %></option>                          
+                                    </select>
+                                </div>                                 
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="usuario" class="form-select">EDITADO POR</label>
+                                    <select class="custom-select rounded-0" id="usuario" name="usuario" class="form-select">
+                                        <option value="<%= userName %>" selected><%= userName %></option>                          
+                                    </select>
+                                </div>                    
+                            </div>
+                        </div>
+                        <div class="card-footer mt-3 align-items-center">
+                            <a href="/monitorJira" class="btn btn-primary mt-0 mb-0">
+                                <i class="fas fa-sync-alt text-white"></i>
+                            </a>
+                            <button type="submit" class="btn btn-primary"
+                                <%= (fecha[0].en_ejecucion === 'EN EJECUCION') ? 'disabled' : '' %>>
+                                EJECUTAR LECTURA JIRA
+                            </button>
+                            <span class="<%= (fecha[0].en_ejecucion === 'EN EJECUCION') ? 'text-danger' : 'text-success' %>">
+                                <%= fecha[0].en_ejecucion %>
+                            </span>
+                        </div>                                                                                                                     
+                    </form> 
+                                                                        
+                </div><!-- /.card-body -->                
+            </div>                                       
+          </div>    
+        </div>
+        <div class="row">
+            <div class="col-md-12">            
+              <div class="card callout callout-warning card-outline ">                
+                  <div class="card-header">
+                    <h3 class="card-title">ISSUES</h3>
+                  </div>
+                  <div class="card-body">
+                    <div class="card-footer  mb-3">
+                        <% if (issue.length > 0 && issue[0].link_incidencias) { %>
+                            Link jira <a href="<%= issue[0].link_incidencias %>" target="_blank" class="text-primary">INCIDENCIAS</a>.
+                        <% } else { %>
+                            <span>No hay incidencias disponibles</span>
+                        <% } %>
+                    </div>                   
+                      
+                      <table id="example5" class="table table-striped mt-4 table-responsive">
+                        <thead class="table-dark">
+                          <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">CREADO</th>  
+                            <th scope="col">ESTADO</th>                                                    
+                            <th scope="col">ISSUE</th> 
+                            <th scope="col">ASIGNADO</th>
+                            <th scope="col">TITULO</th>
+                            <th scope="col">ESCALADO</th>
+                            <th scope="col">ISSUE_ESCALADO</th>
+                            <th scope="col">ASIGNADO_ESCALADO</th>                                                
+                            <th scope="col">ESTADO_ESCALADO</th>
+                            <th scope="col">TIEMPO_SOLUCION</th>
+                            <th scope="col">TIEMPO_SOLUCION_2</th>                            
+                          </tr>
+                        </thead>
+                        <tbody>
+                            <% let count = 1; %> <!-- Definir la variable count aquí -->
+                            <% issue.forEach(function(itemissue) { %>                             
+                              <tr>
+                                <td><%= count++ %></td>   <!-- Incrementar la variable count manualmente -->
+                                <td><%= itemissue.CREADO %></td> 
+                                <td><%= itemissue.ESTADO %></td>                                 
+                                <!-- Aquí es donde se corrige el enlace -->
+                                <td class="text-center">
+                                  <a class="badge <%= itemissue.cod %>" href="<%= itemissue.LINK %>" target="_blank">
+                                    <%= itemissue.ISSUE %>
+                                  </a>
+                                </td>  
+                                <td><%= itemissue.ASIGNADO %></td>
+                                <td><%= itemissue.TITULO %></td>   
+                                <td><%= itemissue.ESCALADO %></td>
+                                <td><%= itemissue.ISSUE_ESCALADO %></td>   
+                                <td><%= itemissue.ASIGNADO_ESCALADO %></td>   
+                                <td><%= itemissue.ESTADO_ESCALADO %></td> 
+                                <td><%= itemissue.TIEMPO_SOLUCION %></td> 
+                                <td><%= itemissue.TIEMPO_SOLUCION_2 %></td>                                                                      
+                              </tr> 
+                            <% }); %>             
+                          </tbody>                          
+                       </table>                         
+                  </div><!-- /.card-body -->
+              </div>                                       
+            </div>    
+        </div>                      
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+<%- include("template/footer") %>
