@@ -5,6 +5,11 @@ const nodemailer = require('nodemailer');
 require('dotenv').config();
 const { promisify } = require('util');
 const {authenticate} = require('./auth')
+const getUserByEmail = async (email) => {
+    const query = 'SELECT * FROM user WHERE email = ?';
+    const [user] = await db.execute(query, [email]);
+    return user;
+  };
 
 //procedimiento para registrar
 exports.register = async (req, res) => {     
@@ -146,8 +151,9 @@ exports.login = async (req, res) => {
                         showConfirmButton: false,
                         timer: 800,
                         ruta: 'index',
-                        userName: user,
+                        userName: results[0].email,
                         userRol: results[0].rol,
+                        user:  results[0],
                         results: results
                     });
                 } else {

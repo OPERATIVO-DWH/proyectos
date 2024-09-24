@@ -19,7 +19,7 @@ const path = require('path');
 const fs = require('fs');
 
 const getUserByEmail = async (email) => {
-    const query = 'SELECT * user WHERE email = ?';
+    const query = 'SELECT * FROM user WHERE email = ?';
     const [user] = await db.execute(query, [email]);
     return user;
   };
@@ -48,7 +48,7 @@ router.get('/users', authControllers.isAuthenticate,(req, res)=> {
                 //res.send(results);
                 res.render('users', {results : results, userName: req.user.email, userRol: req.user.rol})
             } else {
-                res.render('index', { userName: req.user.email, userRol: req.user.rol });
+                res.render('index', { userName: req.user.email, userRol: req.user.rol,user: req.user });
             }              
         }
     })    
@@ -61,7 +61,7 @@ router.get('/createUser', authControllers.isAuthenticate,(req, res) => {
     if(req.user.rol=="Admin") {
         res.render('createUser')
     } else {
-        res.render('index', { userName: req.user.email, userRol: req.user.rol });
+        res.render('index', { userName: req.user.email, userRol: req.user.rol,user: req.user });
     }       
 });
 
@@ -73,9 +73,9 @@ router.get('/editUser/:id', authControllers.isAuthenticate,(req, res) => {
         throw error;
         } else {    
             if(req.user.rol=="Admin") {
-                res.render('editUser', {user : results [0], userName: req.user.email, userRol: req.user.rol})
+                res.render('editUser', {user : results [0], userName: req.user.email, userRol: req.user.rol,user: req.user})
             } else {
-                res.render('index', { userName: req.user.email, userRol: req.user.rol });
+                res.render('index', { userName: req.user.email, userRol: req.user.rol,user: req.user });
             }            
         }
     })
@@ -161,7 +161,7 @@ router.get('/inventarioReportes', authControllers.isAuthenticate, (req, res) => 
             } else {
                 // Aquí pasas 'results' a la vista
                 // res.render('inventarioReportes', { results: results });
-                res.render('inventarioReportes', { results: results, userName: req.user.email, userRol: req.user.rol });
+                res.render('inventarioReportes', { results: results, userName: req.user.email, userRol: req.user.rol,user: req.user });
             }
         });
     } else {
@@ -173,7 +173,7 @@ router.get('/inventarioReportes', authControllers.isAuthenticate, (req, res) => 
 // para direccionar a inventarioReportesCreate.ejs
 router.get('/inventarioReportesCreate', authControllers.isAuthenticate,(req, res) => {
     if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
-        res.render('inventarioReportesCreate', { userName: req.user.email, userRol: req.user.rol, alert: false })        
+        res.render('inventarioReportesCreate', { userName: req.user.email, userRol: req.user.rol,user: req.user, alert: false })        
     } else {
         res.render('index', { userName: req.user.email, titleweb: "Inicio" });
     }       
@@ -189,7 +189,7 @@ router.get('/inventarioReportesEdit/:id', authControllers.isAuthenticate,(req, r
         throw error;
         } else {    
             if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
-                res.render('inventarioReportesEdit', {user : results [0], userName: req.user.email, userRol: req.user.rol})
+                res.render('inventarioReportesEdit', {user : results [0], userName: req.user.email, userRol: req.user.rol,user: req.user})
             } else {
                 res.render('index', { userName: req.user.email, titleweb: "Inicio" });
             }            
@@ -250,7 +250,7 @@ router.get('/inventarioTablas', authControllers.isAuthenticate, (req, res) => {
                 throw error;
             } else {
                 // Aquí pasas 'results' a la vista
-                res.render('inventarioTablas', { results: results, userName: req.user.email, userRol: req.user.rol });
+                res.render('inventarioTablas', { results: results, userName: req.user.email, userRol: req.user.rol,user: req.user });
             }
         });
     } else {
@@ -261,7 +261,7 @@ router.get('/inventarioTablas', authControllers.isAuthenticate, (req, res) => {
 // para direccionar a inventarioTablasCreate.ejs
 router.get('/inventarioTablasCreate', authControllers.isAuthenticate,(req, res) => {
     if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
-        res.render('inventarioTablasCreate', { userName: req.user.email, userRol: req.user.rol, alert: false })        
+        res.render('inventarioTablasCreate', { userName: req.user.email, userRol: req.user.rol,user: req.user, alert: false })        
     } else {
         res.render('index', { userName: req.user.email, titleweb: "Inicio" });
     }       
@@ -275,7 +275,7 @@ router.get('/inventarioTablasEdit/:id', authControllers.isAuthenticate,(req, res
         throw error;
         } else {    
             if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
-                res.render('inventarioTablasEdit', {user : results [0], userName: req.user.email, userRol: req.user.rol})
+                res.render('inventarioTablasEdit', {user : results [0], userName: req.user.email, userRol: req.user.rol,user: req.user})
             } else {
                 res.render('index', { userName: req.user.email, titleweb: "Inicio" });
             }            
@@ -332,7 +332,7 @@ router.get('/inventarioProcesos', authControllers.isAuthenticate, (req, res) => 
                 throw error;
             } else {
                 // Aquí pasas 'results' a la vista
-                res.render('inventarioProcesos', { results: results, userName: req.user.email, userRol: req.user.rol });
+                res.render('inventarioProcesos', { results: results, userName: req.user.email, userRol: req.user.rol,user: req.user });
             }
         });
     } else {
@@ -343,7 +343,7 @@ router.get('/inventarioProcesos', authControllers.isAuthenticate, (req, res) => 
 // para direccionar a inventarioProcesosCreate.ejs
 router.get('/inventarioProcesosCreate', authControllers.isAuthenticate,(req, res) => {
     if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
-        res.render('inventarioProcesosCreate', {userName: req.user.email, userRol: req.user.rol, alert: false })        
+        res.render('inventarioProcesosCreate', {userName: req.user.email, userRol: req.user.rol,user: req.user, alert: false })        
     } else {
         res.render('index', { userName: req.user.email, titleweb: "Inicio" });
     }       
@@ -357,7 +357,7 @@ router.get('/inventarioProcesosEdit/:id', authControllers.isAuthenticate,(req, r
         throw error;
         } else {    
             if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
-                res.render('inventarioProcesosEdit', {user : results [0], userName: req.user.email, userRol: req.user.rol})
+                res.render('inventarioProcesosEdit', {user : results [0], userName: req.user.email, userRol: req.user.rol,user: req.user})
             } else {
                 res.render('index', { userName: req.user.email, titleweb: "Inicio" });
             }            
@@ -742,7 +742,8 @@ router.get('/dependenciasReporte/:id', authControllers.isAuthenticate, async (re
                 flujo: flujo, 
                 relacion: relacion,             
                 userName: req.user.email, // Nombre de usuario
-                userRol: req.user.rol
+                userRol: req.user.rol,
+                user: req.user
             });
         } else {
             res.render('index', { userName: req.user.email, titleweb: "Inicio" });
@@ -880,7 +881,8 @@ router.get('/monitorNetezzaConsultas_activas', authControllers.isAuthenticate, a
                 resultsIdle: resultsIdle,
                 resultsCount: resultsCount,
                 userName: req.user.email, 
-                userRol: req.user.rol
+                userRol: req.user.rol,
+                user: req.user
             });
         } catch (error) {
             console.error('Error al ejecutar la consulta en Netezza:', error);
@@ -976,7 +978,7 @@ router.get('/download', authControllers.isAuthenticate, (req, res) => {
                 }
             });
 
-            res.render('download', { results: results, userName: req.user.email, userRol: req.user.rol });
+            res.render('download', { results: results, userName: req.user.email, userRol: req.user.rol,user: req.user });
         }
     });
 });
@@ -1187,7 +1189,7 @@ router.get('/todo_reportes', authControllers.isAuthenticate, (req, res) => {
                 }
             });
 
-            res.render('todo_reportes', { results: results, userName: req.user.email, userRol: req.user.rol });
+            res.render('todo_reportes', { results: results, userName: req.user.email, userRol: req.user.rol,user: req.user });
         }
     });
 });
@@ -1219,7 +1221,7 @@ router.get('/Acceso_reportes', authControllers.isAuthenticate, (req, res) => {
 
         // Proceso adicional si es necesario (como calcular mtime o estados)
 
-        res.render('Acceso_reportes', { results, userName: req.user.email, userRol: req.user.rol });
+        res.render('Acceso_reportes', { results, userName: req.user.email, userRol: req.user.rol,user: req.user });
     });
 });
 
@@ -1241,7 +1243,7 @@ router.get('/Acceso_reportes_Edit/:id', authControllers.isAuthenticate, (req, re
 
             if (req.user && (req.user.rol === 'Admin' || req.user.rol === 'Suscriptor')) {
                 // Asegúrate de que la vista 'Accesso_reportes_Edit' existe
-                res.render('Acceso_reportes_Edit', { user: results[0], userName: req.user.email, userRol: req.user.rol });
+                res.render('Acceso_reportes_Edit', { user: results[0], userName: req.user.email, userRol: req.user.rol,user: req.user });
                 
             } else {
                 res.render('index', { userName: req.user.email, titleweb: 'Inicio' });
@@ -1262,7 +1264,7 @@ router.post('/updateAcesso_reporte',  userControllers.updateAcesso_reporte);
 // para direccionar a AccesoreportesCreate.ejs
 router.get('/AccesoreportesCreate', authControllers.isAuthenticate,(req, res) => {
     if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
-        res.render('AccesoreportesCreate', { userName: req.user.email, userRol: req.user.rol, alert: false })        
+        res.render('AccesoreportesCreate', { userName: req.user.email, userRol: req.user.rol,user: req.user, alert: false })        
     } else {
         res.render('index', { userName: req.user.email, titleweb: "Inicio" });
     }       
@@ -1429,7 +1431,7 @@ router.get('/dpi', authControllers.isAuthenticate,(req, res) => {
             if (err) {
               return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
             }        
-            res.render('dpi', {result, result2, userName: req.user.email, userRol: req.user.rol})            
+            res.render('dpi', {result, result2, userName: req.user.email, userRol: req.user.rol,user: req.user})            
         });    
       });
     
@@ -1463,7 +1465,7 @@ router.post('/dpiKill', authControllers.isAuthenticate,(req, res) => {
             if (err) {
               return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
             }        
-            res.render('dpi', {result, result2, userName: req.user.email, userRol: req.user.rol, id_process: id_process})            
+            res.render('dpi', {result, result2, userName: req.user.email, userRol: req.user.rol, id_process: id_process,user: req.user})            
         });    
       });
           
@@ -1485,7 +1487,7 @@ router.get('/dataStage-11-7', authControllers.isAuthenticate,(req, res) => {
         if (err) {
             return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
         }        
-        res.render('dataStage-11-7', {result, result2, userName: req.user.email, userRol: req.user.rol})            
+        res.render('dataStage-11-7', {result, result2, userName: req.user.email, userRol: req.user.rol,user: req.user})            
     });    
     });    
 }); 
@@ -1521,7 +1523,7 @@ router.post('/dataStage-11-7', authControllers.isAuthenticate,(req, res) => {
             if (err) {
               return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
             }        
-            res.render('dataStage-11-7', {result, result2, userName: req.user.email, userRol: req.user.rol, id_process: id_process})            
+            res.render('dataStage-11-7', {result, result2, userName: req.user.email, userRol: req.user.rol, id_process: id_process,user: req.user})            
         });    
       });    
 }); 
@@ -1543,7 +1545,7 @@ router.get('/pentaho', authControllers.isAuthenticate,(req, res) => {
             if (err) {
               return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
             }        
-            res.render('pentaho', {result, result2, userName: req.user.email, userRol: req.user.rol})            
+            res.render('pentaho', {result, result2, userName: req.user.email, userRol: req.user.rol,user: req.user})            
         });    
       });    
 }); 
@@ -1562,7 +1564,7 @@ router.get('/voneRpl', authControllers.isAuthenticate,(req, res) => {
                 throw error;
                 } else {    
                     if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
-                        res.render('voneRpl', {datos2 : results2 [0], datos1 : results1 [0], userName: req.user.email, userRol: req.user.rol})                        
+                        res.render('voneRpl', {datos2 : results2 [0], datos1 : results1 [0], userName: req.user.email, userRol: req.user.rol,user: req.user})                        
                     } else {
                         res.render('index', { userName: req.user.email, titleweb: "Inicio" });
                     }            
@@ -1583,7 +1585,7 @@ router.get('/storageVivaTePresta', authControllers.isAuthenticate,(req, res) => 
         } else {                
             if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
                 const user1 = Array.isArray(results1) ? results1 : [];
-                res.render('storageVivaTePresta', {datos1 : user1, userName: req.user.email, userRol: req.user.rol})                        
+                res.render('storageVivaTePresta', {datos1 : user1, userName: req.user.email, userRol: req.user.rol,user: req.user})                        
             } else {
                 res.render('index', { userName: req.user.email, titleweb: "Inicio" });
             }                               
@@ -1645,7 +1647,8 @@ router.get('/monitorJira', authControllers.isAuthenticate, async (req, res) => {
                 fecha: fecha,    // Lista de fechas
                 issue: issue,    // Lista de issues                          
                 userName: req.user.email, // Nombre de usuario
-                userRol: req.user.rol
+                userRol: req.user.rol,
+                user: req.user
             });
         } else {
             res.render('index', { 
