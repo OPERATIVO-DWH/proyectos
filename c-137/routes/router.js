@@ -18,6 +18,13 @@ const { exec } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
+const getUserByEmail = async (email) => {
+    const query = 'SELECT * user WHERE email = ?';
+    const [user] = await db.execute(query, [email]);
+    return user;
+  };
+  
+
 //es la raiz
 router.get('/users', authControllers.isAuthenticate,(req, res)=> {
     
@@ -102,7 +109,7 @@ router.get('/deleteUser/:id', (req, res) => {
 router.get('/', authControllers.isAuthenticate, (req, res) => {
     // Asegúrate de que `req.user` existe antes de intentar acceder a sus propiedades
     if (req.user) {
-        res.render('index', { userName: req.user.email, userRol: req.user.rol });
+        res.render('index', { userName: req.user.email, userRol: req.user.rol,user: req.user });
     } else {
         // Si por alguna razón no existe el usuario, redirigir a la página de login o manejar el error
         res.redirect('/login');
@@ -880,7 +887,7 @@ router.get('/monitorNetezzaConsultas_activas', authControllers.isAuthenticate, a
             res.status(500).send('Ocurrió un error al ejecutar la consulta en Netezza.');
         }
     } else {
-        res.render('index', { userName: req.user.email, titleweb: "Inicio" });
+        res.render('index', { userName: req.user.email, userRol: req.user.rol,titleweb: "Inicio" });
     }
 });
 
@@ -1607,7 +1614,9 @@ router.get('/monitorJira', authControllers.isAuthenticate, async (req, res) => {
         } else {
             res.render('index', { 
                 userName: req.user.email, 
+                userRol: req.user.rol,
                 titleweb: "Inicio" 
+                
             });
         }
 

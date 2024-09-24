@@ -38,18 +38,23 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
+              <% if (user.MIS_REPORTES === 1) { %>
               <li class="nav-item">
                 <a href="/download" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>MIS REPORTES</p>
                 </a>
-              </li>                 
+              </li>
+              <% } %> 
+              <% if (user.TODOS_REPORTES === 1) { %>                
               <li class="nav-item">
                 <a href="/todo_reportes" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>TODOS LOS REPORTES</p>
                 </a>
-              </li>   
+              </li>
+              <% } %> 
+            </li>   
             </ul>
           </li>  
           <li class="nav-item">
@@ -82,6 +87,8 @@
             </ul>
           </li>
 
+
+          <% if (userRol === 'Admin' || userRol === 'Jira') { %>
           <li class="nav-item">
             <a href="#" class="nav-link">                            
               <i class="nav-icon fas fa-tachometer-alt"></i>           
@@ -89,7 +96,7 @@
                 MONITOR
                 <i class="fas fa-angle-left right"></i>
               </p>
-            </a>
+            </a>            
             <ul class="nav nav-treeview"> 
               <li class="nav-item">
                 <a href="#" class="nav-link">
@@ -133,6 +140,7 @@
                 </ul>
               </li> 
 
+              <% if (userRol === 'Admin') { %>
               <li class="nav-item">
                 <a href="#" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
@@ -220,7 +228,9 @@
                     </a>
                   </li>      
                 </ul>
-              </li>                             
+              </li> 
+              <% } %> 
+
               <li class="nav-item">
                 <a href="/monitorJira" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
@@ -229,32 +239,33 @@
               </li>
             </ul>            
           </li>
+          <% } %>  
 
-          <% if (userRol === 'Admin') { %>
-          <li class="nav-item">
-            <a href="#" class="nav-link">                            
-              <i class="nav-icon fas fa-solid fa-user-tie"></i>              
-              <p>
-                ADMINISTRADOR
-                <i class="fas fa-angle-left right"></i>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="/users" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>USUARIOS</p>
+          <% if (userRol === 'Admin') { %>             
+            <li class="nav-item">
+                <a href="#" class="nav-link">                            
+                    <i class="nav-icon fas fa-solid fa-user-tie"></i>              
+                    <p>
+                        ADMINISTRADOR
+                        <i class="fas fa-angle-left right"></i>
+                    </p>
                 </a>
-              </li>
-              <li class="nav-item">
-                <a href="/Acceso_reportes" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>ACCESO REPORTES</p>
-                </a>
-              </li>              
-            </ul>
-          </li>  
-          <% } %>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <a href="/users" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>USUARIOS</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/Acceso_reportes" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>ACCESO REPORTES</p>
+                        </a>
+                    </li>              
+                </ul>
+            </li>  
+          <% } %>        
 
           <li class="nav-item">
             <a href="/logout" class="nav-link">
