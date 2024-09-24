@@ -3,7 +3,8 @@ const express = require('express')
 const router = express.Router()
 // invoca a la base de datos mysql
 const conexion = require('../database/db')
-const cxNetezza = require('../database/netezza_db');
+const cxNetezza = require('../database/netezza_db')
+const conexion_jira = require('../database/db_jira')
 
 //invoca el metodo CRUD de usuarios
 const userControllers = require('../controllers/userControllers')
@@ -190,21 +191,8 @@ router.get('/inventarioReportesEdit/:id', authControllers.isAuthenticate,(req, r
 });  
 
 
-
-
-
-
-
-
-
 router.post('/saveRepor', userControllers.saveRepor); 
 router.post('/updateRepor', userControllers.updateRepor); 
-
-
-
-
- 
-
 
 
 // Para el delete reporte
@@ -312,7 +300,6 @@ router.get('/deleteTablas/:id', authControllers.isAuthenticate, (req, res) => {
 });
 
 // direcciona inventario PROCESOS
-
 router.get('/inventarioProcesos', authControllers.isAuthenticate, (req, res) => {
     if(req.user.rol === "Suscriptor" || req.user.rol === "Admin") {
         // Supongamos que quieres obtener la lista de usuarios para el reporte de inventario
@@ -1259,7 +1246,7 @@ router.get('/Acceso_reportes_Edit/:id', authControllers.isAuthenticate, (req, re
 
   
 router.post('/saveTablas', userControllers.saveTablas); 
-router.post('/updateTablas', userControllers.updateRepor);  
+router.post('/updateTablas', userControllers.updateTablas);  
 router.post('/Acceso_reportes_Edit', userControllers.Acceso_reportes_Edit); 
 router.post('/updateAcesso_reporte',  userControllers.updateAcesso_reporte);
 
@@ -1417,12 +1404,256 @@ router.get('/popup-content', authControllers.isAuthenticate, (req, res) => {
     });
 });
 
+// para direccionar a dpi.ejs
+router.get('/dpi', authControllers.isAuthenticate,(req, res) => {
+    //const id = req.params.id;    
+    const { executeSSHCommand } = require('../src/ssh/ssh-connect');
+    const { executeSSHCommand2 } = require('../src/ssh/ssh-connect-dpi-2');
+    
+    const app = express();
+    //const bb = 'Hola'        
+      executeSSHCommand((err, result) => {
+        if (err) {
+          return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+        }        
+        //res.render('dpi', {result})
+        //res.render('dpi', {bb})
+        executeSSHCommand2((err, result2) => {
+            if (err) {
+              return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+            }        
+            res.render('dpi', {result, result2, userName: req.user.email, userRol: req.user.rol})            
+        });    
+      });
+    
+    //res.render('dpi', {bb})   
+}); 
+
+// para direccionar a dpi.ejs   KILL
+router.post('/dpiKill', authControllers.isAuthenticate,(req, res) => {
+    const id_process = req.body.numero; //req.params.numero;
+    //res.send('¡Hola, este es un texto simple desde Node.js!');
+    //res.send(id_process);
+    
+    const { executeSSHCommand } = require('../src/ssh/ssh-connect');
+    const { executeSSHCommand2 } = require('../src/ssh/ssh-connect-dpi-2');
+    const { executeSSHCommand3 } = require('../src/ssh/ssh-connect-dpi-3-kill');
+    
+    const app = express();    
+
+    executeSSHCommand3((err, result2) => {
+        if (err) {
+        return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+        }        
+        //res.render('dpi', {result, result2, userName: req.user.email, userRol: req.user.rol, id_process: id_process})            
+    }, id_process);    
+
+      executeSSHCommand((err, result) => {
+        if (err) {
+          return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+        }                        
+        executeSSHCommand2((err, result2) => {
+            if (err) {
+              return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+            }        
+            res.render('dpi', {result, result2, userName: req.user.email, userRol: req.user.rol, id_process: id_process})            
+        });    
+      });
+          
+}); 
+
+// para direccionar a dataStage-11-7.ejs
+router.get('/dataStage-11-7', authControllers.isAuthenticate,(req, res) => {
+
+    const { executeSSHCommand } = require('../src/ssh/ssh-connect-ds-11-7');
+    const { executeSSHCommand2 } = require('../src/ssh/ssh-connect-ds-11-7-2');
+    
+    const app = express();
+          
+    executeSSHCommand((err, result) => {
+    if (err) {
+        return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+    }        
+    executeSSHCommand2((err, result2) => {
+        if (err) {
+            return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+        }        
+        res.render('dataStage-11-7', {result, result2, userName: req.user.email, userRol: req.user.rol})            
+    });    
+    });    
+}); 
+
+// para direccionar a dataStage-11-7.ejs
+router.post('/dataStage-11-7', authControllers.isAuthenticate,(req, res) => {
+    const id_process = req.body.numero;     
+
+    const { executeSSHCommand } = require('../src/ssh/ssh-connect-ds-11-7');
+    const { executeSSHCommand2 } = require('../src/ssh/ssh-connect-ds-11-7-2');
+    const { executeSSHCommand3 } = require('../src/ssh/ssh-connect-ds-11-7-3-kill');
+    
+    const app = express();
+
+    if (!id_process || id_process === '') { // cuando la variable es vacia o nula
+        //res.send('¡Hola, este es un texto simple desde Node.js!');
+        //res.send(id_process);        
+    }
+    else {
+        executeSSHCommand3((err, result2) => {
+            if (err) {
+            return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+            }        
+            //res.render('dpi', {result, result2, userName: req.user.email, userRol: req.user.rol, id_process: id_process})            
+        }, id_process);    
+    }
+            
+      executeSSHCommand((err, result) => {
+        if (err) {
+          return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+        }        
+        executeSSHCommand2((err, result2) => {
+            if (err) {
+              return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+            }        
+            res.render('dataStage-11-7', {result, result2, userName: req.user.email, userRol: req.user.rol, id_process: id_process})            
+        });    
+      });    
+}); 
 
 
+// para direccionar a pentaho.ejs
+router.get('/pentaho', authControllers.isAuthenticate,(req, res) => {
+
+    const { executeSSHCommand } = require('../src/ssh/ssh-connect-pentaho-13');
+    const { executeSSHCommand2 } = require('../src/ssh/ssh-connect-pentaho-13-2');
+    
+    const app = express();
+        
+      executeSSHCommand((err, result) => {
+        if (err) {
+          return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+        }        
+        executeSSHCommand2((err, result2) => {
+            if (err) {
+              return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
+            }        
+            res.render('pentaho', {result, result2, userName: req.user.email, userRol: req.user.rol})            
+        });    
+      });    
+}); 
+
+// para direccionar a voneRpl.ejs
+router.get('/voneRpl', authControllers.isAuthenticate,(req, res) => {
+
+    const conexion2 = require('../database/db-vone-rpl')
+
+    conexion2.query('select min(timestamp) as min_fecha, max(timestamp) as max_fecha from record.charge_record', (error, results1) => {
+        if(error){
+        throw error;
+        } else {    
+            conexion2.query('select min(end_timestamp) as min_fecha, max(end_timestamp) as max_fecha from record.session_record', (error, results2) => {
+                if(error){
+                throw error;
+                } else {    
+                    if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
+                        res.render('voneRpl', {datos2 : results2 [0], datos1 : results1 [0], userName: req.user.email, userRol: req.user.rol})                        
+                    } else {
+                        res.render('index', { userName: req.user.email, titleweb: "Inicio" });
+                    }            
+                }
+            })
+        }    
+    })
+}); 
+
+// para direccionar a storageVivaTePresta.ejs
+router.get('/storageVivaTePresta', authControllers.isAuthenticate,(req, res) => {
+
+    const conexion2 = require('../database/db-storage-viva-te-presta')
+
+    conexion2.query('SELECT recharge_date, COUNT(1) AS total_recharges FROM storage.recharge_day WHERE TIMESTAMP >= NOW() - INTERVAL 7 DAY GROUP BY recharge_date ORDER BY recharge_date DESC', (error, results1) => {
+        if(error){
+        throw error;
+        } else {                
+            if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
+                const user1 = Array.isArray(results1) ? results1 : [];
+                res.render('storageVivaTePresta', {datos1 : user1, userName: req.user.email, userRol: req.user.rol})                        
+            } else {
+                res.render('index', { userName: req.user.email, titleweb: "Inicio" });
+            }                               
+        }    
+    })
+}); 
 
 
+// Ruta para direccionar a JIRA.ejs
+router.get('/monitorJira', authControllers.isAuthenticate, async (req, res) => {
+    try {
+        // Consulta para obtener fechas
+        const queryFecha = `
+            SELECT f.id,f.date_ini,f.date_fin,case when f.en_ejecucion=1 then 'EN EJECUCION' ELSE 'DISPONIBLE' END en_ejecucion FROM jira_date_created f
+        `;
 
+        const queryIssue = `
+            SELECT
+            CASE WHEN j.created IS NULL then 'no' ELSE j.created END CREADO,
+            j.status_name ESTADO,
+            j.issue_key ISSUE,
+            j.assignee_email ASIGNADO,
+            j.summary TITULO,
+            -- j.customfield_10121,
+            -- j.timetracking_timeSpent,
+            j.issuelinks_inwardIssue ESCALADO,
+            j.inwardIssue_key ISSUE_ESCALADO,
+            h.assignee_email ASIGNADO_ESCALADO,
+            h.status_name ESTADO_ESCALADO,
+            h.customfield_10121 TIEMPO_SOLUCION,
+            h.timetracking_timeSpent TIEMPO_SOLUCION_2,
+            CONCAT('https://salamancasolutions.atlassian.net/issues/', j.issue_key) AS LINK,
+            "https://salamancasolutions.atlassian.net/jira/software/c/projects/NTSUP24/issues" AS link_incidencias,
+            case 
+            when j.issuelinks_inwardIssue=0 then 'bg-danger'
+            when j.issuelinks_inwardIssue=1 AND h.status_name IN ('Finalizada')  then 'bg-success'
+            when j.issuelinks_inwardIssue=1 AND h.status_name NOT IN ('Finalizada') then 'bg-warning'  
+            else 'bg-light text-muted'
+            end cod
+            FROM
+            jira_issues_op j
+            LEFT JOIN jira_issues_op h ON j.inwardIssue_key = h.issue_key
+            WHERE 
+            j.assignee_email IN ('Justo Fernando Martinez Rivera','Justo Fernando Martinez Rivera','jhonny Balderrama Guzman','Juan Carlos Balderrama','Jose Villanueva')
+            AND j.status_name NOT IN ('Finalizada','Resolved-Validation Pending')
+            ORDER BY 
+            j.issuelinks_inwardIssue ASC,
+            h.status_name DESC;
 
+        `;
+
+        // Usar las consultas con promesas
+        const [fecha] = await conexion_jira.query(queryFecha); 
+        const [issue] = await conexion_jira.query(queryIssue);
+
+        // Verificación de roles y renderizado de la vista
+        if (req.user.rol === "Admin") {
+            res.render('monitorJira', {                
+                fecha: fecha,    // Lista de fechas
+                issue: issue,    // Lista de issues                          
+                userName: req.user.email, // Nombre de usuario
+                userRol: req.user.rol
+            });
+        } else {
+            res.render('index', { 
+                userName: req.user.email, 
+                titleweb: "Inicio" 
+            });
+        }
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
+router.post('/updateFecha', userControllers.updateFecha); 
 
 
 

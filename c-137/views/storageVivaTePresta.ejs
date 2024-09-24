@@ -1,0 +1,46 @@
+  <%- include("template/header")%>
+  <%- include("template/navbar")%>
+  <%- include("template/aside") %>
+  <!-- Content Wrapper. Contains page content -->
+
+  <div class="content-wrapper"> 
+    <%- include('template/breadcrumb', { module: 'STORAGE - VIVA Te PRESTA', module1: 'SERVIDORES BD / STORAGE - VIVA Te PRESTA' }) %>
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="card card-info card-outline">
+          <!-- <div class="card-header">
+            <h3 class="card-title">Icons</h3>
+          </div> /.card-body -->
+          <div class="card-body">
+            <a href="/inventarioReportesCreate" class="btn btn-primary mt-4 mb-2">NUEVO <i class="fa-solid fa-square-plus"></i></a>
+
+            <table id="example1" class="table table-striped mt-4 table-responsive">
+              <thead class="table-dark">
+                <tr>
+                  <th scope="col" colspan="2" ><center>Agregado de Recargas Número Día</center></th>                  
+                </tr>
+                <tr>
+                  <th scope="col">Fecha</th>
+                  <th scope="col">Cantidad Registros</th>                  
+                </tr>
+              </thead>
+              <tbody>                  
+                <% datos1.forEach(function(opcion) { %>                                      
+                <tr>                  
+                  <td><%= new Date(opcion.recharge_date).toISOString().slice(0, 10) %></td>                                                
+                  <td><%= opcion.total_recharges %></td>                  
+                </tr>                                   
+                <% }); %>
+              </tbody>
+            </table>                                            
+          </div><!-- /.card-body -->
+
+        </div>
+      </div><!-- /.container-fluid -->
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+  <%- include("template/footer") %>

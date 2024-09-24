@@ -5,14 +5,14 @@ const conexion = mysql.createConnection({
     user: 'operdat',
     password: 'operacionesJ4',
     // database: 'crud_nodejs'
-    database: 'gob_datos'
-
+    database: 'gob_datos',
+    connectTimeout: 30000  // Tiempo de espera en milisegundos (30 segundos)
 })
 
 
 conexion.connect((error) => {
     if(error){
-        console.error('error de conexion mysql:' + error)
+        console.error('Error de conexión MySQL:', error.code, error.sqlMessage, error.stack);
         return
     }
     console.log('se conecto a la base de datos mysql')

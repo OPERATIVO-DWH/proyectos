@@ -50,6 +50,11 @@
 <!-- Bootstrap4 Duallistbox -->
 <script src="./../js/jquery.bootstrap-duallistbox.min.js"></script>
 
+<!-- calendario -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/js/tempusdominus-bootstrap-4.min.js"></script>
+<!-- calendario -->
+
 <!-- script para hacer el borrado con sweetalert2 https://sweetalert2.github.io/#handling-buttons-->
 <script>
     function confirmationUser(id){
@@ -171,10 +176,8 @@
 <script>
     $(function () {
       $("#example1").DataTable({
-        "responsive": true, "lengthChange": true, "autoWidth": false,"ordering": false,
-        "buttons": ["copy", "csv", "excel", "pdf", "colvis"],
-        "dom": '<"row"<"col-sm-12 col-md-1"f>>' +
-        '<"row"<"col-sm-4 col-md-4"B> <"col-sm-1 col-md-1"l>>' 
+        "responsive": true, "lengthChange": true, "autoWidth": false,"ordering": false, "paging": true,
+        "buttons": ["copy", "csv", "excel", "pdf", "colvis"],        
       }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
       $('#example2').DataTable({
         "paging": true,
@@ -183,7 +186,8 @@
         "ordering": true,
         "info": true,
         "autoWidth": false,
-        "responsive": true,
+        "responsive": true, 
+        "searching": true,          
       });
       $("#example3").DataTable({
         "responsive": true, "lengthChange": true, "autoWidth": false,"ordering": false,
@@ -199,6 +203,13 @@
         "responsive": true, "lengthChange": true, "autoWidth": false,"ordering": true, "paging": true,
         "buttons": ["copy", "csv", "excel", "pdf", "colvis"]        
       }).buttons().container().appendTo('#example5_wrapper .col-md-6:eq(0)');
+      $('#reservationdate1').datetimepicker({
+            format: 'YYYY-MM-DD'
+        });
+
+        $('#reservationdate2').datetimepicker({
+            format: 'YYYY-MM-DD'
+        });      
     });
   </script>
   
