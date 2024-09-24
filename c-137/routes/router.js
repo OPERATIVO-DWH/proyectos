@@ -1582,6 +1582,68 @@ router.get('/storageVivaTePresta', authControllers.isAuthenticate,(req, res) => 
     })
 }); 
 
+// para direccionar a traficoVoz.ejs
+router.get('/traficoVoz', authControllers.isAuthenticate,async(req, res) => {
+
+    //const express = require('express');
+    //const router = express.Router();
+    const { getConnection } = require('./../database/db-fludb'); // Importar la conexión a la base de datos
+    
+    // Ruta que ejecuta la consulta SQL
+    //router.get('/consulta', async (req, res) => {
+      let connection;
+      try {
+        // Obtener conexión a la base de datos
+        connection = await getConnection();
+        
+        // Ejecutar consulta SQL
+        const result = await connection.execute(`SELECT fecha, count(1) as cantidad FROM trafico.stg_traf_bill_uno WHERE FECHA >= TO_DATE('20240921','YYYYMMDD') group by fecha order by fecha`);
+        
+        // Enviar el resultado como respuesta
+        res.json(result.rows);
+      } catch (err) {
+        console.error('Error ejecutando la consulta', err);
+        res.status(500).send('Error en la consulta Uhhhh');
+      } finally {
+        if (connection) {
+          try {
+
+            if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
+                const user1 = Array.isArray(result) ? result : [];
+                res.render('storageVivaTePresta', {datos1 : user1, userName: req.user.email, userRol: req.user.rol})                        
+            } else {
+                res.render('index', { userName: req.user.email, titleweb: "Inicio" });
+            }                               
+
+            // Cerrar la conexión
+            await connection.close();
+
+          } catch (err) {
+            console.error('Error al cerrar la conexión', err);
+          }
+        }
+      }
+    //});
+    
+    //module.exports = router;
+    
+
+
+    /*const conexion2 = require('../database/db-fludb')
+
+    conexion2.query('SELECT recharge_date, COUNT(1) AS total_recharges FROM storage.recharge_day WHERE TIMESTAMP >= NOW() - INTERVAL 7 DAY GROUP BY recharge_date ORDER BY recharge_date DESC', (error, results1) => {
+        if(error){
+        throw error;
+        } else {                
+            if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
+                const user1 = Array.isArray(results1) ? results1 : [];
+                res.render('storageVivaTePresta', {datos1 : user1, userName: req.user.email, userRol: req.user.rol})                        
+            } else {
+                res.render('index', { userName: req.user.email, titleweb: "Inicio" });
+            }                               
+        }    
+    })*/
+}); 
 
 // Ruta para direccionar a JIRA.ejs
 router.get('/monitorJira', authControllers.isAuthenticate, async (req, res) => {
