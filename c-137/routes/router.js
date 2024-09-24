@@ -970,13 +970,13 @@ router.get('/download', authControllers.isAuthenticate, (req, res) => {
 
                     } catch (err) {
                        // console.error(`Error al obtener la fecha de última modificación para el archivo ${filePath}:`, err);
-                        result.mtime = 'No disponible';
+                        result.mtime = 'Sin Detalle';
                         result.isToday = false;
                         result.isCurrentHour = false;
                     }
                 } else {
                     console.warn(`Advertencia: 'direccion_ftp' o 'reporte' están vacíos para el id ${result.id}`);
-                    result.mtime = 'No disponible';
+                    result.mtime = '';
                     result.isToday = false;
                     result.isCurrentHour = false;
                 }
@@ -995,17 +995,19 @@ router.get('/download_file', authControllers.isAuthenticate, (req, res) => {
     if (req.user.rol === "Admin" || req.user.rol === "Suscriptor") {
         const id = req.query.id; // Obtiene el ID desde los parámetros de la URL
         const ftp = decodeURIComponent(req.query.ftp); // Obtiene la dirección FTP desde los parámetros de la URL
-        console.log('Dirección FTP recibida:', ftp);
-        console.log('ID recibido:', id); // Log del ID recibido
+       // console.log('Dirección FTP recibida:', ftp);
+       // console.log('ID recibido:', id); // Log del ID recibido
 
         // Asume que el ID corresponde directamente al nombre del archivo
         const filename = `${id}`; // Usa el ID para construir el nombre del archivo
-        console.log('Nombre del archivo:', filename);
+        //console.log('Nombre del archivo:', filename);
 
         // Construye la ruta del archivo
         const filePath = path.join(ftp.endsWith('\\') ? ftp : ftp + '\\', filename);
-        console.log('Ruta del archivo:', filePath); // Log de la ruta del archivo
+        //console.log('Ruta del archivo:', filePath); // Log de la ruta del archivo
 
+
+        
         // Verifica si el archivo existe antes de intentar descargarlo
         fs.access(filePath, fs.constants.F_OK, (err) => {
             if (err) {
@@ -1043,7 +1045,7 @@ router.get('/download_file', authControllers.isAuthenticate, (req, res) => {
                     // Realiza la inserción en la base de datos
                     conexion.query('INSERT INTO log_descargas SET ?', {
                         id_reporte: id, // Asegúrate de que este valor sea compatible con el tipo de datos de la columna
-                        nombre_reporte: filename,
+                        nombre_reporte: ftp,
                         accion: 'DESCARGAR',
                         usuario: req.user.email,
                         fecha_accion: fecha_accion,
