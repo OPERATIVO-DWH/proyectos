@@ -23,9 +23,13 @@ async function authenticate(user, pass) {
 
         const result = await response.json();
         console.log(result);
+
+        // Retornar el resultado esperado
+        return result;
+
     } catch (error) {
         console.error('Error during authentication:', error);
+        return { message: 'Error en la autenticación', response: false }; // Retornar un objeto consistente
     }
 }
 module.exports = { authenticate }
-

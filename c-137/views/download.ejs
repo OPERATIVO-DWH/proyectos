@@ -21,7 +21,7 @@
                 <th scope="col">REPORTE</th>
                 <th scope="col">ESTADO</th>
                 <th scope="col">FECHA ACTUALIZACION</th>
-                <th scope="col">TIPO_ACCESO</th>
+                
                 <th scope="col">ACCIÓN</th>             
               </tr>
             </thead>
@@ -37,7 +37,7 @@
                     </span>
                   </td>
                   <td><%= user.mtime %></td>
-                  <td><%= user.tipo_acceso %></td>
+                  
                   <td>
                     <% if (user.tipo_acceso === 'descarga') { %>
                       <a href="/download_file?id=<%= user.reporte %>&ftp=<%= encodeURIComponent(user.direccion_ftp) %>" class="btn btn-primary">DESCARGAR</a>
