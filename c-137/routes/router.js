@@ -46,7 +46,7 @@ router.get('/users', authControllers.isAuthenticate,(req, res)=> {
         } else {
             if(req.user.rol=="Admin") {
                 //res.send(results);
-                res.render('users', {results : results, userName: req.user.email, userRol: req.user.rol})
+                res.render('users', {results : results, userName: req.user.email, userRol: req.user.rol, user: req.user})
             } else {
                 res.render('index', { userName: req.user.email, userRol: req.user.rol,user: req.user });
             }              
