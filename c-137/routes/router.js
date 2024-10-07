@@ -1285,11 +1285,7 @@ router.get('/accesoReportes', authControllers.isAuthenticate, (req, res) => {
 
         // Proceso adicional si es necesario (como calcular mtime o estados)
 
-<<<<<<< HEAD
         res.render('accesoReportes', { results, userName: req.user.email, userRol: req.user.rol,user: req.user });
-=======
-        res.render('Acceso_reportes', { results, userName: req.user.email, userRol: req.user.rol,user1: req.user });
->>>>>>> 0e3b5ef78f780bf362a3deb438739af938488c5b
     });
 });
 
