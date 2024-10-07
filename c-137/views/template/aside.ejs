@@ -257,7 +257,6 @@
           </li>
           <% } %>  
 
-<<<<<<< HEAD
                     <% if (userRol === 'Admin') { %>             
                       <li class="nav-item">
                           <a href="#" class="nav-link">                            
@@ -323,37 +322,6 @@
                           </ul>
                       </li>  
                     <% } %>        
-=======
-          <% if (user1.ADMINISTRADOR_USUARIOS === 1 || user1.ADMINISTRADOR_ACCESO_REPORTES === 1) { %>              
-            <li class="nav-item">
-                <a href="#" class="nav-link">                            
-                    <i class="nav-icon fas fa-solid fa-user-tie"></i>              
-                    <p>
-                        ADMINISTRADOR
-                        <i class="fas fa-angle-left right"></i>
-                    </p>
-                </a>
-                <ul class="nav nav-treeview">
-                  <% if (user1.ADMINISTRADOR_USUARIOS === 1) { %>
-                    <li class="nav-item">
-                        <a href="/users" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i>
-                            <p>USUARIOS</p>
-                        </a>
-                    </li>
-                    <% } %> 
-                    <% if (user1.ADMINISTRADOR_ACCESO_REPORTES === 1) { %>
-                    <li class="nav-item">
-                        <a href="/Acceso_reportes" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i>
-                            <p>ACCESO REPORTES</p>
-                        </a>
-                    </li>
-                    <% } %>              
-                </ul>
-            </li>  
-          <% } %>        
->>>>>>> 0e3b5ef78f780bf362a3deb438739af938488c5b
 
           <li class="nav-item">
             <a href="/logout" class="nav-link">
