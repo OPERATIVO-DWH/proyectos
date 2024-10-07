@@ -54,6 +54,9 @@ exports.saveRepor = async (req, res) => {
         const producto = req.body.producto;
         const URL = req.body.URL;
         const usuario = req.body.usuario;
+        const fuente = req.body.fuente;
+        const nivel_informacion = req.body.nivel_informacion;
+        const descripcion = req.body.descripcion;
 
         const fecha_insert = new Date();
         const ip_insert = req.connection.remoteAddress;
@@ -75,6 +78,9 @@ exports.saveRepor = async (req, res) => {
             producto: producto,
             URL: URL,
             hora_ejecucion: hora_ejecucion,
+            fuente: fuente,
+            nivel_informacion: nivel_informacion,
+            descripcion: descripcion,
             usuario: usuario,
             fecha_insert: fecha_insert,
             ip_insert: ip_insert
@@ -100,7 +106,8 @@ exports.saveRepor = async (req, res) => {
 
 //procedimiento para update  reporte
 exports.updateRepor = (req, res) => {
-    const id_reporte = req.body.id_reporte
+    const id_reporte = req.body.id_reporte;
+    const estado_reporte = req.body.estado_reporte
     const cd_reporte = req.body.cd_reporte;
     const nombre_reporte = req.body.nombre_reporte;
     const tipo_reporte = req.body.tipo_reporte;
@@ -111,6 +118,11 @@ exports.updateRepor = (req, res) => {
     const producto = req.body.producto;
     const URL = req.body.URL;
     const hora_ejecucion = req.body.hora_ejecucion;
+
+    const fuente = req.body.fuente;
+    const nivel_informacion = req.body.nivel_informacion;
+    const descripcion = req.body.descripcion;
+
     const usuario = req.body.usuario;
 
     // Obtener la hora del sistema, nombre del equipo e IP del cliente
@@ -118,7 +130,7 @@ exports.updateRepor = (req, res) => {
     // const ip_insert = req.headers['x-forwarded-for'] || req.connection.remoteAddress;  
     const ip_insert = req.connection.remoteAddress;
 
-    conexion.query('UPDATE reporte SET ? WHERE id_reporte = ?', [{ cd_reporte:cd_reporte, nombre_reporte:nombre_reporte, tipo_reporte:tipo_reporte, frecuencia:frecuencia, repositorio:repositorio, responsable:responsable, area:area, producto:producto, URL:URL, hora_ejecucion:hora_ejecucion, usuario:usuario, fecha_insert:fecha_insert, ip_insert:ip_insert}, id_reporte], (error,results) => {
+    conexion.query('UPDATE reporte SET ? WHERE id_reporte = ?', [{ cd_reporte:cd_reporte, estado_reporte:estado_reporte, nombre_reporte:nombre_reporte, tipo_reporte:tipo_reporte, frecuencia:frecuencia, repositorio:repositorio, responsable:responsable, area:area, producto:producto, URL:URL, hora_ejecucion:hora_ejecucion, fuente:fuente, nivel_informacion:nivel_informacion, descripcion:descripcion, usuario:usuario, fecha_insert:fecha_insert, ip_insert:ip_insert}, id_reporte], (error,results) => {
         if(error) {
             console.error(error)
         } else {

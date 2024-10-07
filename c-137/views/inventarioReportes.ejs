@@ -16,32 +16,34 @@
               </div> /.card-body -->
               <div class="card-body">
                 <a href="/inventarioReportesCreate" class="btn btn-primary mt-4 mb-2">NUEVO <i class="fa-solid fa-square-plus"></i></a>
-                <table id="example2" class="table table-striped mt-4 table-responsive">
+                <table id="ireportes" class="table table-striped mt-4 table-responsive">
                   <thead class="table-dark">
                     <tr>
-                      <th scope="col">#ID</th>
+                      <th scope="col">#</th>
                       <!-- <th scope="col">ESTADO</th> -->
                       <th scope="col">REPORTE</th>
                       <th scope="col">TIPO</th>
                       <th scope="col">FRECUENCIA</th>
-                      <th scope="col">REPOSITORIO</th>
-                      <th scope="col">RUTA</th>
+                      <!-- <th scope="col">REPOSITORIO</th> -->
+                      <!-- <th scope="col">RUTA</th> -->
                       <th scope="col">ACCIONES</th>            
                     </tr>
                   </thead>
                   <tbody>
+                      <% let count = 1; %> <!-- Definir la variable count aquí -->
                       <% results.forEach ((user) => { %>
                           <tr>
-                            <td><%= user.id_reporte %></td>
+                            <td><%= count++ %></td>   <!-- Incrementar la variable count manualmente -->
+                            <!-- <td><%= user.id_reporte %></td> -->
                             <!-- <td><%= user.estado_reporte %></td> -->
                             <td><%= user.nombre_reporte %></td>
                             <td><%= user.tipo_reporte %></td>
                             <td><%= user.frecuencia %></td>
-                            <td><%= user.repositorio %></td>
-                            <td><%= user.URL %></td>
+                            <!-- <td><%= user.repositorio %></td> -->
+                            <!-- <td><%= user.URL %></td> -->
                             <td>
-                            <a href="/inventarioReportesEdit/<%= user.id_reporte %>"class="btn btn-primary"><i class="fa-solid fa-pen-to-square" data-toggle="tooltip" title="EDITAR"></i></a>
-                            <a href="/dependenciasReporte/<%= user.id_reporte %>"class="btn btn-secondary"><i class="fa-solid fa-link" data-toggle="tooltip" title="DEPENDENCIAS"></i></a>                        
+                            <a href="/inventarioReportesEdit/<%= user.id_reporte %>" class="btn btn-primary"><i class="fa-solid fa-pen-to-square" data-toggle="tooltip" title="EDITAR"></i></a>
+                            <a href="/dependenciasReporte/<%= user.id_reporte %>" class="btn btn-secondary"><i class="fa-solid fa-link" data-toggle="tooltip" title="DEPENDENCIAS"></i></a>                        
                             <!-- <a href="/deleteRepo/<%= user.id_reporte %>" onclick="return confirm('ESTA SEGURO DE ELIMINAR EL REGISTRO?');" class="btn btn-danger"><i class="fa-solid fa-trash-can"></i></a> -->
                             <!-- para hacer el borrado con sweetalert2 https://sweetalert2.github.io/#handling-buttons-->
                             <!-- <a onclick="confirmation(<%= user.id %>);" class="btn btn-danger">BORRAR</a> -->

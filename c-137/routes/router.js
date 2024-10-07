@@ -20,8 +20,8 @@ const fs = require('fs');
 
 const getUserByEmail = async (email) => {
     const query = 'SELECT * FROM user WHERE email = ?';
-    const [user] = await db.execute(query, [email]);
-    return user;
+    const [user1] = await db.execute(query, [email]);
+    return user1;
   };
   
 
@@ -46,9 +46,9 @@ router.get('/users', authControllers.isAuthenticate,(req, res)=> {
         } else {
             if(req.user.rol=="Admin") {
                 //res.send(results);
-                res.render('users', {results : results, userName: req.user.email, userRol: req.user.rol, user: req.user})
+                res.render('users', {results : results, userName: req.user.email, userRol: req.user.rol, user1: req.user})
             } else {
-                res.render('index', { userName: req.user.email, userRol: req.user.rol,user: req.user });
+                res.render('index', { userName: req.user.email, userRol: req.user.rol,user1: req.user });
             }              
         }
     })    
@@ -61,7 +61,7 @@ router.get('/createUser', authControllers.isAuthenticate,(req, res) => {
     if(req.user.rol=="Admin") {
         res.render('createUser')
     } else {
-        res.render('index', { userName: req.user.email, userRol: req.user.rol,user: req.user });
+        res.render('index', { userName: req.user.email, userRol: req.user.rol,user1: req.user });
     }       
 });
 
@@ -73,9 +73,9 @@ router.get('/editUser/:id', authControllers.isAuthenticate,(req, res) => {
         throw error;
         } else {    
             if(req.user.rol=="Admin") {
-                res.render('editUser', {user : results [0], userName: req.user.email, userRol: req.user.rol,user: req.user})
+                res.render('editUser', {user : results [0], userName: req.user.email, userRol: req.user.rol,user1: req.user})
             } else {
-                res.render('index', { userName: req.user.email, userRol: req.user.rol,user: req.user });
+                res.render('index', { userName: req.user.email, userRol: req.user.rol,user1: req.user });
             }            
         }
     })
@@ -109,7 +109,7 @@ router.get('/deleteUser/:id', (req, res) => {
 router.get('/', authControllers.isAuthenticate, (req, res) => {
     // Asegúrate de que `req.user` existe antes de intentar acceder a sus propiedades
     if (req.user) {
-        res.render('index', { userName: req.user.email, userRol: req.user.rol,user: req.user });
+        res.render('index', { userName: req.user.email, userRol: req.user.rol,user1: req.user });
     } else {
         // Si por alguna razón no existe el usuario, redirigir a la página de login o manejar el error
         res.redirect('/login');
@@ -121,7 +121,7 @@ router.get('/logout', authControllers.logout);
 
 // direcciona a login
 router.get('/login', (req, res) => {
-    res.render('login', { alert:false })
+    res.render('login', { alert:false})
 });
 
 // direcciona a register
@@ -140,19 +140,23 @@ router.get('/inventarioReportes', authControllers.isAuthenticate, (req, res) => 
         // Supongamos que quieres obtener la lista de usuarios para el reporte de inventario
         const query = `
             SELECT 
-                r.id_reporte,
-                r.estado_reporte,
-                r.nombre_reporte,
-                r.tipo_reporte,
-                r.frecuencia,
-                r.repositorio,
-                r.URL 
+            r.id_reporte,
+            r.estado_reporte,
+            r.nombre_reporte,
+            tr.tipo_reporte,
+            f.frecuencia,
+            rp.repositorio,
+            r.URL,
+            r.estado_reporte 
             FROM 
-                reporte r
+            reporte r
+            LEFT JOIN gob_datos.tipo_reporte tr ON tr.id_tipo_reporte=r.tipo_reporte
+            LEFT JOIN gob_datos.frecuencia f ON f.id_frecuencia=r.frecuencia
+            LEFT JOIN gob_datos.repositorio rp ON rp.id_repositorio=r.repositorio
             WHERE
-                r.estado_reporte='A'
+            r.estado_reporte='A'
             ORDER BY 
-                r.id_reporte DESC    
+            r.id_reporte DESC    
         `;
         
         conexion.query(query, (error, results) => {
@@ -161,7 +165,7 @@ router.get('/inventarioReportes', authControllers.isAuthenticate, (req, res) => 
             } else {
                 // Aquí pasas 'results' a la vista
                 // res.render('inventarioReportes', { results: results });
-                res.render('inventarioReportes', { results: results, userName: req.user.email, userRol: req.user.rol,user: req.user });
+                res.render('inventarioReportes', { results: results, userName: req.user.email, userRol: req.user.rol,user1: req.user });
             }
         });
     } else {
@@ -173,7 +177,7 @@ router.get('/inventarioReportes', authControllers.isAuthenticate, (req, res) => 
 // para direccionar a inventarioReportesCreate.ejs
 router.get('/inventarioReportesCreate', authControllers.isAuthenticate,(req, res) => {
     if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
-        res.render('inventarioReportesCreate', { userName: req.user.email, userRol: req.user.rol,user: req.user, alert: false })        
+        res.render('inventarioReportesCreate', { userName: req.user.email, userRol: req.user.rol,user1: req.user, alert: false })        
     } else {
         res.render('index', { userName: req.user.email, titleweb: "Inicio" });
     }       
@@ -184,12 +188,44 @@ router.get('/inventarioReportesCreate', authControllers.isAuthenticate,(req, res
 // para direccionar a edit.ejs
 router.get('/inventarioReportesEdit/:id', authControllers.isAuthenticate,(req, res) => {
     const id = req.params.id;
-    conexion.query('SELECT * FROM reporte WHERE id_reporte = ?', [id], (error, results) => {
+    conexion.query(`SELECT 
+                    r.id_reporte,
+                    r.estado_reporte,
+                    r.cd_reporte,
+                    r.nombre_reporte,
+                    tr.tipo_reporte,
+                    tr.id_tipo_reporte,
+                    f.frecuencia,
+                    f.id_frecuencia,
+                    rp.repositorio,
+                    rp.id_repositorio,
+                    r.responsable,
+                    a.nombre area,
+                    a.id_area,
+                    p.producto,
+                    p.id_producto,
+                    r.URL,
+                    r.fuente,
+                    ni.nivel_informacion,
+                    ni.id_nivel_informacion,
+                    r.descripcion,
+                    r.hora_ejecucion
+                    FROM 
+                    reporte r
+                    LEFT JOIN gob_datos.tipo_reporte tr ON tr.id_tipo_reporte=r.tipo_reporte
+                    LEFT JOIN gob_datos.frecuencia f ON f.id_frecuencia=r.frecuencia
+                    LEFT JOIN gob_datos.repositorio rp ON rp.id_repositorio=r.repositorio
+                    LEFT JOIN gob_datos.area a ON a.id_area=r.area
+                    LEFT JOIN gob_datos.producto p ON p.id_producto=r.producto
+                    LEFT JOIN gob_datos.nivel_informacion ni ON ni.id_nivel_informacion=r.nivel_informacion
+                    WHERE
+                    r.id_reporte=?;        
+        `, [id], (error, results) => {
         if(error){
         throw error;
         } else {    
             if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
-                res.render('inventarioReportesEdit', {user : results [0], userName: req.user.email, userRol: req.user.rol,user: req.user})
+                res.render('inventarioReportesEdit', {user : results [0], userName: req.user.email, userRol: req.user.rol,user1: req.user})
             } else {
                 res.render('index', { userName: req.user.email, titleweb: "Inicio" });
             }            
@@ -250,7 +286,7 @@ router.get('/inventarioTablas', authControllers.isAuthenticate, (req, res) => {
                 throw error;
             } else {
                 // Aquí pasas 'results' a la vista
-                res.render('inventarioTablas', { results: results, userName: req.user.email, userRol: req.user.rol,user: req.user });
+                res.render('inventarioTablas', { results: results, userName: req.user.email, userRol: req.user.rol,user1: req.user });
             }
         });
     } else {
@@ -261,7 +297,7 @@ router.get('/inventarioTablas', authControllers.isAuthenticate, (req, res) => {
 // para direccionar a inventarioTablasCreate.ejs
 router.get('/inventarioTablasCreate', authControllers.isAuthenticate,(req, res) => {
     if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
-        res.render('inventarioTablasCreate', { userName: req.user.email, userRol: req.user.rol,user: req.user, alert: false })        
+        res.render('inventarioTablasCreate', { userName: req.user.email, userRol: req.user.rol,user1: req.user, alert: false })        
     } else {
         res.render('index', { userName: req.user.email, titleweb: "Inicio" });
     }       
@@ -275,7 +311,7 @@ router.get('/inventarioTablasEdit/:id', authControllers.isAuthenticate,(req, res
         throw error;
         } else {    
             if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
-                res.render('inventarioTablasEdit', {user : results [0], userName: req.user.email, userRol: req.user.rol,user: req.user})
+                res.render('inventarioTablasEdit', {user : results [0], userName: req.user.email, userRol: req.user.rol,user1: req.user})
             } else {
                 res.render('index', { userName: req.user.email, titleweb: "Inicio" });
             }            
@@ -332,7 +368,7 @@ router.get('/inventarioProcesos', authControllers.isAuthenticate, (req, res) => 
                 throw error;
             } else {
                 // Aquí pasas 'results' a la vista
-                res.render('inventarioProcesos', { results: results, userName: req.user.email, userRol: req.user.rol,user: req.user });
+                res.render('inventarioProcesos', { results: results, userName: req.user.email, userRol: req.user.rol,user1: req.user });
             }
         });
     } else {
@@ -343,7 +379,7 @@ router.get('/inventarioProcesos', authControllers.isAuthenticate, (req, res) => 
 // para direccionar a inventarioProcesosCreate.ejs
 router.get('/inventarioProcesosCreate', authControllers.isAuthenticate,(req, res) => {
     if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
-        res.render('inventarioProcesosCreate', {userName: req.user.email, userRol: req.user.rol,user: req.user, alert: false })        
+        res.render('inventarioProcesosCreate', {userName: req.user.email, userRol: req.user.rol,user1: req.user, alert: false })        
     } else {
         res.render('index', { userName: req.user.email, titleweb: "Inicio" });
     }       
@@ -357,7 +393,7 @@ router.get('/inventarioProcesosEdit/:id', authControllers.isAuthenticate,(req, r
         throw error;
         } else {    
             if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
-                res.render('inventarioProcesosEdit', {user : results [0], userName: req.user.email, userRol: req.user.rol,user: req.user})
+                res.render('inventarioProcesosEdit', {user : results [0], userName: req.user.email, userRol: req.user.rol,user1: req.user})
             } else {
                 res.render('index', { userName: req.user.email, titleweb: "Inicio" });
             }            
@@ -743,7 +779,7 @@ router.get('/dependenciasReporte/:id', authControllers.isAuthenticate, async (re
                 relacion: relacion,             
                 userName: req.user.email, // Nombre de usuario
                 userRol: req.user.rol,
-                user: req.user
+                user1: req.user
             });
         } else {
             res.render('index', { userName: req.user.email, titleweb: "Inicio" });
@@ -882,7 +918,7 @@ router.get('/monitorNetezzaConsultas_activas', authControllers.isAuthenticate, a
                 resultsCount: resultsCount,
                 userName: req.user.email, 
                 userRol: req.user.rol,
-                user: req.user
+                user1: req.user
             });
         } catch (error) {
             console.error('Error al ejecutar la consulta en Netezza:', error);
@@ -902,31 +938,54 @@ router.get('/download', authControllers.isAuthenticate, (req, res) => {
 
     if (req.user.rol === "Admin") {
         query = `
-            SELECT DISTINCT
-                r.id,
-                r.reporte,
-                r.direccion_ftp,
-                tipo_acceso 
-            FROM 
-                acceso_reportes r 
-            ORDER BY 
-                r.id ASC
+            SELECT 
+            a.id,
+            r.nombre_reporte reporte,
+            -- a.reporte,
+            -- a.direccion_ftp,
+            r.URL direccion_ftp,
+            a.tipo_acceso,
+            u.email usuario,
+            CONCAT (o.nombre,'-',ar.nombre,'-',c.cargo) cargo
+            FROM
+            gob_datos.acceso_reportes a
+            LEFT JOIN (SELECT * FROM gob_datos.reporte WHERE estado_reporte='A') r ON a.id_reporte=r.id_reporte
+            LEFT JOIN gob_datos.user u ON u.id=a.id_user
+            LEFT JOIN gob_datos.cargo c ON c.id_cargo=a.id_cargo
+            LEFT JOIN gob_datos.area ar ON c.id_area=ar.id_area
+            LEFT JOIN gob_datos.organizacion o ON ar.id_organizacion=o.id_organizacion
+            LEFT JOIN gob_datos.cargo_usuario cu ON cu.id_cargo=c.id_cargo
+            LEFT JOIN gob_datos.user u1 ON u1.id=cu.id_usuario
+            WHERE 
+            u.email=?
+            OR u1.email=?
         `;
+        queryParams = [req.user.email,req.user.email];
     } else if (req.user.rol === "Suscriptor") {
         query = `
-            SELECT DISTINCT
-                r.id,
-                r.reporte,
-                r.direccion_ftp,
-                tipo_acceso 
-            FROM 
-                acceso_reportes r 
+            SELECT 
+            a.id,
+            r.nombre_reporte reporte,
+            -- a.reporte,
+            -- a.direccion_ftp,
+            r.URL direccion_ftp,
+            a.tipo_acceso,
+            u.email usuario,
+            CONCAT (o.nombre,'-',ar.nombre,'-',c.cargo) cargo
+            FROM
+            gob_datos.acceso_reportes a
+            LEFT JOIN (SELECT * FROM gob_datos.reporte WHERE estado_reporte='A') r ON a.id_reporte=r.id_reporte
+            LEFT JOIN gob_datos.user u ON u.id=a.id_user
+            LEFT JOIN gob_datos.cargo c ON c.id_cargo=a.id_cargo
+            LEFT JOIN gob_datos.area ar ON c.id_area=ar.id_area
+            LEFT JOIN gob_datos.organizacion o ON ar.id_organizacion=o.id_organizacion
+            LEFT JOIN gob_datos.cargo_usuario cu ON cu.id_cargo=c.id_cargo
+            LEFT JOIN gob_datos.user u1 ON u1.id=cu.id_usuario
             WHERE 
-                r.usuario = ?
-            ORDER BY 
-                r.id ASC
+            u.email=?
+            OR u1.email=?
         `;
-        queryParams = [req.user.email];
+        queryParams = [req.user.email,req.user.email];
     }
 
     conexion.query(query, queryParams, (error, results) => {
@@ -978,7 +1037,7 @@ router.get('/download', authControllers.isAuthenticate, (req, res) => {
                 }
             });
 
-            res.render('download', { results: results, userName: req.user.email, userRol: req.user.rol,user: req.user });
+            res.render('download', { results: results, userName: req.user.email, userRol: req.user.rol,user1: req.user });
         }
     });
 });
@@ -1128,14 +1187,19 @@ router.get('/todo_reportes', authControllers.isAuthenticate, (req, res) => {
 
     if (req.user.rol === "Admin") {
         query = `
-            SELECT DISTINCT
-                r.id,
-                r.reporte,
-                r.direccion_ftp 
-            FROM 
-                acceso_reportes r 
-            ORDER BY 
-                r.id ASC
+            SELECT
+            r.id_reporte,
+            r.nombre_reporte,
+            r.tipo_reporte,
+            r.frecuencia,
+            r.URL,
+            r.fuente,
+            r.nivel_informacion,
+            r.descripcion
+            FROM
+            gob_datos.reporte r
+            WHERE 
+            r.estado_reporte='A'
         `;
     } else if (req.user.rol === "Suscriptor") {
         query = `
@@ -1189,7 +1253,7 @@ router.get('/todo_reportes', authControllers.isAuthenticate, (req, res) => {
                 }
             });
 
-            res.render('todo_reportes', { results: results, userName: req.user.email, userRol: req.user.rol,user: req.user });
+            res.render('todo_reportes', { results: results, userName: req.user.email, userRol: req.user.rol,user1: req.user });
         }
     });
 });
@@ -1221,7 +1285,11 @@ router.get('/accesoReportes', authControllers.isAuthenticate, (req, res) => {
 
         // Proceso adicional si es necesario (como calcular mtime o estados)
 
+<<<<<<< HEAD
         res.render('accesoReportes', { results, userName: req.user.email, userRol: req.user.rol,user: req.user });
+=======
+        res.render('Acceso_reportes', { results, userName: req.user.email, userRol: req.user.rol,user1: req.user });
+>>>>>>> 0e3b5ef78f780bf362a3deb438739af938488c5b
     });
 });
 
@@ -1244,7 +1312,7 @@ router.get('/Acceso_reportes_Edit/:id', authControllers.isAuthenticate, (req, re
 
             if (req.user && (req.user.rol === 'Admin' || req.user.rol === 'Suscriptor')) {
                 // Asegúrate de que la vista 'Accesso_reportes_Edit' existe
-                res.render('Acceso_reportes_Edit', { user: results[0], userName: req.user.email, userRol: req.user.rol,user: req.user });
+                res.render('Acceso_reportes_Edit', { user: results[0], userName: req.user.email, userRol: req.user.rol,user1: req.user });
                 
             } else {
                 res.render('index', { userName: req.user.email, titleweb: 'Inicio' });
@@ -1265,7 +1333,7 @@ router.post('/updateAcesso_reporte',  userControllers.updateAcesso_reporte);
 // para direccionar a AccesoreportesCreate.ejs
 router.get('/AccesoreportesCreate', authControllers.isAuthenticate,(req, res) => {
     if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
-        res.render('AccesoreportesCreate', { userName: req.user.email, userRol: req.user.rol,user: req.user, alert: false })        
+        res.render('AccesoreportesCreate', { userName: req.user.email, userRol: req.user.rol,user1: req.user, alert: false })        
     } else {
         res.render('index', { userName: req.user.email, titleweb: "Inicio" });
     }       
@@ -1432,7 +1500,7 @@ router.get('/dpi', authControllers.isAuthenticate,(req, res) => {
             if (err) {
               return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
             }        
-            res.render('dpi', {result, result2, userName: req.user.email, userRol: req.user.rol,user: req.user})            
+            res.render('dpi', {result, result2, userName: req.user.email, userRol: req.user.rol,user1: req.user})            
         });    
       });
     
@@ -1466,7 +1534,7 @@ router.post('/dpiKill', authControllers.isAuthenticate,(req, res) => {
             if (err) {
               return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
             }        
-            res.render('dpi', {result, result2, userName: req.user.email, userRol: req.user.rol, id_process: id_process,user: req.user})            
+            res.render('dpi', {result, result2, userName: req.user.email, userRol: req.user.rol, id_process: id_process,user1: req.user})            
         });    
       });
           
@@ -1488,7 +1556,7 @@ router.get('/dataStage-11-7', authControllers.isAuthenticate,(req, res) => {
         if (err) {
             return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
         }        
-        res.render('dataStage-11-7', {result, result2, userName: req.user.email, userRol: req.user.rol,user: req.user})            
+        res.render('dataStage-11-7', {result, result2, userName: req.user.email, userRol: req.user.rol,user1: req.user})            
     });    
     });    
 }); 
@@ -1524,7 +1592,7 @@ router.post('/dataStage-11-7', authControllers.isAuthenticate,(req, res) => {
             if (err) {
               return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
             }        
-            res.render('dataStage-11-7', {result, result2, userName: req.user.email, userRol: req.user.rol, id_process: id_process,user: req.user})            
+            res.render('dataStage-11-7', {result, result2, userName: req.user.email, userRol: req.user.rol, id_process: id_process,user1: req.user})            
         });    
       });    
 }); 
@@ -1546,7 +1614,7 @@ router.get('/pentaho', authControllers.isAuthenticate,(req, res) => {
             if (err) {
               return res.status(500).send(`Error al ejecutar el comando SSH: ${err}`);
             }        
-            res.render('pentaho', {result, result2, userName: req.user.email, userRol: req.user.rol,user: req.user})            
+            res.render('pentaho', {result, result2, userName: req.user.email, userRol: req.user.rol,user1: req.user})            
         });    
       });    
 }); 
@@ -1565,7 +1633,7 @@ router.get('/voneRpl', authControllers.isAuthenticate,(req, res) => {
                 throw error;
                 } else {    
                     if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
-                        res.render('voneRpl', {datos2 : results2 [0], datos1 : results1 [0], userName: req.user.email, userRol: req.user.rol,user: req.user})                        
+                        res.render('voneRpl', {datos2 : results2 [0], datos1 : results1 [0], userName: req.user.email, userRol: req.user.rol,user1: req.user})                        
                     } else {
                         res.render('index', { userName: req.user.email, titleweb: "Inicio" });
                     }            
@@ -1586,7 +1654,7 @@ router.get('/storageVivaTePresta', authControllers.isAuthenticate,(req, res) => 
         } else {                
             if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
                 const user1 = Array.isArray(results1) ? results1 : [];
-                res.render('storageVivaTePresta', {datos1 : user1, userName: req.user.email, userRol: req.user.rol,user: req.user})                        
+                res.render('storageVivaTePresta', {datos1 : user1, userName: req.user.email, userRol: req.user.rol,user1: req.user})                        
             } else {
                 res.render('index', { userName: req.user.email, titleweb: "Inicio" });
             }                               
@@ -1594,6 +1662,68 @@ router.get('/storageVivaTePresta', authControllers.isAuthenticate,(req, res) => 
     })
 }); 
 
+// para direccionar a traficoVoz.ejs
+router.get('/traficoVoz', authControllers.isAuthenticate,async(req, res) => {
+
+    //const express = require('express');
+    //const router = express.Router();
+    const { getConnection } = require('./../database/db-fludb'); // Importar la conexión a la base de datos
+    
+    // Ruta que ejecuta la consulta SQL
+    //router.get('/consulta', async (req, res) => {
+      let connection;
+      try {
+        // Obtener conexión a la base de datos
+        connection = await getConnection();
+        
+        // Ejecutar consulta SQL
+        const result = await connection.execute(`SELECT fecha, count(1) as cantidad FROM trafico.stg_traf_bill_uno WHERE FECHA >= TO_DATE('20240921','YYYYMMDD') group by fecha order by fecha`);
+        
+        // Enviar el resultado como respuesta
+        res.json(result.rows);
+      } catch (err) {
+        console.error('Error ejecutando la consulta', err);
+        res.status(500).send('Error en la consulta Uhhhh');
+      } finally {
+        if (connection) {
+          try {
+
+            if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
+                const user1 = Array.isArray(result) ? result : [];
+                res.render('storageVivaTePresta', {datos1 : user1, userName: req.user.email, userRol: req.user.rol,user1: req.user})                        
+            } else {
+                res.render('index', { userName: req.user.email, titleweb: "Inicio" });
+            }                               
+
+            // Cerrar la conexión
+            await connection.close();
+
+          } catch (err) {
+            console.error('Error al cerrar la conexión', err);
+          }
+        }
+      }
+    //});
+    
+    //module.exports = router;
+    
+
+
+    /*const conexion2 = require('../database/db-fludb')
+
+    conexion2.query('SELECT recharge_date, COUNT(1) AS total_recharges FROM storage.recharge_day WHERE TIMESTAMP >= NOW() - INTERVAL 7 DAY GROUP BY recharge_date ORDER BY recharge_date DESC', (error, results1) => {
+        if(error){
+        throw error;
+        } else {                
+            if(req.user.rol=="Admin" || req.user.rol === "Suscriptor") {
+                const user1 = Array.isArray(results1) ? results1 : [];
+                res.render('storageVivaTePresta', {datos1 : user1, userName: req.user.email, userRol: req.user.rol})                        
+            } else {
+                res.render('index', { userName: req.user.email, titleweb: "Inicio" });
+            }                               
+        }    
+    })*/
+}); 
 
 // Ruta para direccionar a JIRA.ejs
 router.get('/monitorJira', authControllers.isAuthenticate, async (req, res) => {
@@ -1620,10 +1750,11 @@ router.get('/monitorJira', authControllers.isAuthenticate, async (req, res) => {
             h.timetracking_timeSpent TIEMPO_SOLUCION_2,
             CONCAT('https://salamancasolutions.atlassian.net/issues/', j.issue_key) AS LINK,
             "https://salamancasolutions.atlassian.net/jira/software/c/projects/NTSUP24/issues" AS link_incidencias,
+            CONCAT('https://salamancasolutions.atlassian.net/issues/', j.inwardIssue_key) AS LINK_ESCALADO,
             case 
             when j.issuelinks_inwardIssue=0 then 'bg-danger'
-            when j.issuelinks_inwardIssue=1 AND h.status_name IN ('Finalizada')  then 'bg-success'
-            when j.issuelinks_inwardIssue=1 AND h.status_name NOT IN ('Finalizada') then 'bg-warning'  
+            when j.issuelinks_inwardIssue=1 AND h.status_name NOT IN ('Finalizada') then 'bg-warning' 
+            when j.issuelinks_inwardIssue=1 AND h.status_name IN ('Finalizada')  then 'bg-success'             
             else 'bg-light text-muted'
             end cod
             FROM
@@ -1649,7 +1780,7 @@ router.get('/monitorJira', authControllers.isAuthenticate, async (req, res) => {
                 issue: issue,    // Lista de issues                          
                 userName: req.user.email, // Nombre de usuario
                 userRol: req.user.rol,
-                user: req.user
+                user1: req.user
             });
         } else {
             res.render('index', { 
@@ -1817,6 +1948,192 @@ ORDER BY a.nombre asc`;
 
 router.post('/updateFecha', userControllers.updateFecha); 
 
+router.get('/area', (req, res) => {
+    let query = `
+        SELECT concat(b.descripcion, '  -  ' ,a.nombre)as nombre,a.id_area
+        FROM area a  , organizacion b
+        WHERE a.id_organizacion=b.id_organizacion
+        ORDER BY b.descripcion ASC, a.nombre asc`;
+    let queryParams = [];
+
+    // Ejecutar la consulta sin autenticación ni verificación de roles
+    conexion.query(query, queryParams, (error, rows) => {
+        if (error) {
+            console.error('Error en la consulta:', error);
+            return res.status(500).send('Error al obtener los datos: ' + error.message);
+        }
+
+        // Mapea los datos a un array de objetos con id_area y nombre
+        const areaData = rows.map(row => ({
+            id_area: row.id_area,
+            nombre: row.nombre
+        }));
+
+        console.log('Datos de áreas obtenidos de la base de datos:', areaData); // Muestra los datos obtenidos
+
+        if (areaData.length === 0) {
+            return res.status(404).send('No se encontraron datos.');
+        }
+
+        // Devolver los datos en formato JSON
+        res.json(areaData);
+    });
+});
+
+router.get('/tipo_reporte', (req, res) => {
+    let query = `
+        SELECT a.tipo_reporte nombre,a.id_tipo_reporte
+        FROM tipo_reporte a  
+        ORDER BY a.id_tipo_reporte ASC`;
+    let queryParams = [];
+
+    // Ejecutar la consulta sin autenticación ni verificación de roles
+    conexion.query(query, queryParams, (error, rows) => {
+        if (error) {
+            console.error('Error en la consulta:', error);
+            return res.status(500).send('Error al obtener los datos: ' + error.message);
+        }
+
+        // Mapea los datos a un array de objetos con id_tipo_reporte y nombre
+        const tipo_reporteData = rows.map(row => ({
+            id_tipo_reporte: row.id_tipo_reporte,
+            nombre: row.nombre
+        }));
+
+        console.log('Datos de áreas obtenidos de la base de datos:', tipo_reporteData); // Muestra los datos obtenidos
+
+        if (tipo_reporteData.length === 0) {
+            return res.status(404).send('No se encontraron datos.');
+        }
+
+        // Devolver los datos en formato JSON
+        res.json(tipo_reporteData);
+    });
+});
+
+router.get('/frecuencia', (req, res) => {
+    let query = `
+        SELECT a.frecuencia nombre,a.id_frecuencia
+        FROM frecuencia a  
+        ORDER BY a.id_frecuencia ASC`;
+    let queryParams = [];
+
+    // Ejecutar la consulta sin autenticación ni verificación de roles
+    conexion.query(query, queryParams, (error, rows) => {
+        if (error) {
+            console.error('Error en la consulta:', error);
+            return res.status(500).send('Error al obtener los datos: ' + error.message);
+        }
+
+        // Mapea los datos a un array de objetos con id_frecuencia y nombre
+        const frecuenciaData = rows.map(row => ({
+            id_frecuencia: row.id_frecuencia,
+            nombre: row.nombre
+        }));
+
+        console.log('Datos de áreas obtenidos de la base de datos:', frecuenciaData); // Muestra los datos obtenidos
+
+        if (frecuenciaData.length === 0) {
+            return res.status(404).send('No se encontraron datos.');
+        }
+
+        // Devolver los datos en formato JSON
+        res.json(frecuenciaData);
+    });
+})
+
+router.get('/repositorio', (req, res) => {
+    let query = `
+        SELECT a.repositorio nombre,a.id_repositorio
+        FROM repositorio a  
+        ORDER BY a.id_repositorio ASC`;
+    let queryParams = [];
+
+    // Ejecutar la consulta sin autenticación ni verificación de roles
+    conexion.query(query, queryParams, (error, rows) => {
+        if (error) {
+            console.error('Error en la consulta:', error);
+            return res.status(500).send('Error al obtener los datos: ' + error.message);
+        }
+
+        // Mapea los datos a un array de objetos con id_repositorio y nombre
+        const repositorioData = rows.map(row => ({
+            id_repositorio: row.id_repositorio,
+            nombre: row.nombre
+        }));
+
+        console.log('Datos de áreas obtenidos de la base de datos:', repositorioData); // Muestra los datos obtenidos
+
+        if (repositorioData.length === 0) {
+            return res.status(404).send('No se encontraron datos.');
+        }
+
+        // Devolver los datos en formato JSON
+        res.json(repositorioData);
+    });
+})
+
+router.get('/producto', (req, res) => {
+    let query = `
+        SELECT a.producto nombre,a.id_producto
+        FROM producto a  
+        ORDER BY a.id_producto ASC`;
+    let queryParams = [];
+
+    // Ejecutar la consulta sin autenticación ni verificación de roles
+    conexion.query(query, queryParams, (error, rows) => {
+        if (error) {
+            console.error('Error en la consulta:', error);
+            return res.status(500).send('Error al obtener los datos: ' + error.message);
+        }
+
+        // Mapea los datos a un array de objetos con id_producto y nombre
+        const productoData = rows.map(row => ({
+            id_producto: row.id_producto,
+            nombre: row.nombre
+        }));
+
+        console.log('Datos de áreas obtenidos de la base de datos:', productoData); // Muestra los datos obtenidos
+
+        if (productoData.length === 0) {
+            return res.status(404).send('No se encontraron datos.');
+        }
+
+        // Devolver los datos en formato JSON
+        res.json(productoData);
+    });
+})
+
+router.get('/nivel_informacion', (req, res) => {
+    let query = `
+        SELECT a.nivel_informacion nombre,a.id_nivel_informacion
+        FROM nivel_informacion a  
+        ORDER BY a.id_nivel_informacion ASC`;
+    let queryParams = [];
+
+    // Ejecutar la consulta sin autenticación ni verificación de roles
+    conexion.query(query, queryParams, (error, rows) => {
+        if (error) {
+            console.error('Error en la consulta:', error);
+            return res.status(500).send('Error al obtener los datos: ' + error.message);
+        }
+
+        // Mapea los datos a un array de objetos con id_nivel_informacion y nombre
+        const nivel_informacionData = rows.map(row => ({
+            id_nivel_informacion: row.id_nivel_informacion,
+            nombre: row.nombre
+        }));
+
+        console.log('Datos de áreas obtenidos de la base de datos:', nivel_informacionData); // Muestra los datos obtenidos
+
+        if (nivel_informacionData.length === 0) {
+            return res.status(404).send('No se encontraron datos.');
+        }
+
+        // Devolver los datos en formato JSON
+        res.json(nivel_informacionData);
+    });
+})
 
 
 module.exports = router;

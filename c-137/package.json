@@ -27,7 +27,11 @@
     "mysql2": "^3.11.3",
     "nodemailer": "^6.9.14",
     "odbc": "^2.4.9",
+<<<<<<< HEAD
     "socket.io": "^4.8.0",
+=======
+    "oracledb": "^6.6.0",
+>>>>>>> 0e3b5ef78f780bf362a3deb438739af938488c5b
     "ssh2": "^1.16.0"
   },
   "devDependencies": {

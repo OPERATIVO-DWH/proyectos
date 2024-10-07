@@ -118,7 +118,12 @@
                                 <td><%= itemissue.ASIGNADO %></td>
                                 <td><%= itemissue.TITULO %></td>   
                                 <td><%= itemissue.ESCALADO %></td>
-                                <td><%= itemissue.ISSUE_ESCALADO %></td>   
+                                <!-- <td><%= itemissue.ISSUE_ESCALADO %></td>  -->
+                                <td class="text-center">
+                                  <a class="badge bg-light text-muted" href="<%= itemissue.LINK_ESCALADO %>" target="_blank">
+                                    <%= itemissue.ISSUE_ESCALADO %>
+                                  </a>
+                                </td>   
                                 <td><%= itemissue.ASIGNADO_ESCALADO %></td>   
                                 <td><%= itemissue.ESTADO_ESCALADO %></td> 
                                 <td><%= itemissue.TIEMPO_SOLUCION %></td> 

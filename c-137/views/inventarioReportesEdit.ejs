@@ -53,44 +53,185 @@
                 <div class="col-md-2">
                     <div class="mb-3">
                         <label for="tipo_reporte" class="form-label">TIPO REPORTE</label>
-                        <!-- <input type="text" class="form-control" id="tipo_reporte" name="tipo_reporte" tabindex="3">  -->
-                        <select class="custom-select rounded-0" style="width: 100%;"  id="tipo_reporte" name="tipo_reporte" tabindex="5">
-                            <option value="<%= user.tipo_reporte %>" selected><%= user.tipo_reporte %></option>   
-                            <option>.xls</option>
-                            <option>.txt o .csv</option>
-                            <!-- <option disabled="disabled">California (disabled)</option> -->
-                            <option>Power BI</option>
-                            <option>Tableau</option>
-                            <option>.zip</option>
-                            <option>Otro</option>
+                        <select class="custom-select rounded-0" style="width: 100%;" id="tipo_reporte" name="tipo_reporte" tabindex="5">
+                            <!-- Opción seleccionada por el usuario -->
+                            <option value="<%= user.id_tipo_reporte %>" selected><%= user.tipo_reporte %></option>
                         </select>               
-                    </div>                    
-                </div>           
+                    </div>  
+                    <script>
+                        document.addEventListener('DOMContentLoaded', async () => {
+                            try {
+                                const response = await fetch('/tipo_reporte');
+                                if (!response.ok) {
+                                    throw new Error('Error al obtener los tipos de reporte');
+                                }
+                                const tipo_reporteData = await response.json();
+                
+                                const tipo_reporteSelect = document.getElementById('tipo_reporte');
+                
+                                // Mantener la opción seleccionada del usuario en la parte superior
+                                tipo_reporteSelect.innerHTML += '<option value="" disabled>Selecciona</option>'; // Opción por defecto (si lo necesitas)
+                                
+                                // Agregar las opciones de la API al dropdown
+                                if (tipo_reporteData.length > 0) {
+                                    tipo_reporteData.forEach(tipo_reporte => {
+                                        const option = document.createElement('option');
+                                        option.value = tipo_reporte.id_tipo_reporte;
+                                        option.textContent = tipo_reporte.nombre;
+                                        
+                                        // Evitar duplicar la opción seleccionada previamente
+                                        if (tipo_reporte.id_tipo_reporte !== '<%= user.id_tipo_reporte %>') {
+                                            tipo_reporteSelect.appendChild(option);
+                                        }
+                                    });
+                                } else {
+                                    const option = document.createElement('option');
+                                    option.value = '';
+                                    option.textContent = 'No hay tipos de reporte disponibles';
+                                    tipo_reporteSelect.appendChild(option);
+                                }
+                            } catch (error) {
+                                console.error('Error:', error);
+                                const tipo_reporteSelect = document.getElementById('tipo_reporte');
+                                tipo_reporteSelect.innerHTML = '<option value="" disabled>Selecciona</option>';
+                                const option = document.createElement('option');
+                                option.value = '';
+                                option.textContent = 'Error al cargar los tipos de reporte';
+                                tipo_reporteSelect.appendChild(option);
+                            }
+                        });
+                
+                        // Validación antes de enviar el formulario
+                        document.querySelector('form').addEventListener('submit', function(event) {
+                            const tipo_reporteSelect = document.getElementById('tipo_reporte');
+                            if (tipo_reporteSelect.value === "") {
+                                event.preventDefault();
+                                alert("Por favor, selecciona un Tipo Reporte.");
+                            }
+                        });
+                    </script>                  
+                </div>                          
             </div>            
             <div class="row">
                 <div class="col-md-2">
                     <div class="mb-3">
                         <label for="frecuencia" class="form-label">FRECUENCIA</label>                        
                         <select class="custom-select rounded-0" style="width: 100%;"  id="frecuencia" name="frecuencia" tabindex="6">
-                            <option value="<%= user.frecuencia %>" selected><%= user.frecuencia %></option>
-                            <option>Diario</option>                            
-                            <option>Semanal</option> 
-                            <option>Quincenal</option>                            
-                            <option>Mes</option>                                                       
+                            <option value="<%= user.id_frecuencia %>" selected><%= user.frecuencia %></option>                                                                                 
                         </select>               
-                    </div>                   
+                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', async () => {
+                            try {
+                                const response = await fetch('/frecuencia');
+                                if (!response.ok) {
+                                    throw new Error('Error al obtener los tipos de reporte');
+                                }
+                                const frecuenciaData = await response.json();
+                
+                                const frecuenciaSelect = document.getElementById('frecuencia');
+                
+                                // Mantener la opción seleccionada del usuario en la parte superior
+                                frecuenciaSelect.innerHTML += '<option value="" disabled>Selecciona</option>'; // Opción por defecto (si lo necesitas)
+                                
+                                // Agregar las opciones de la API al dropdown
+                                if (frecuenciaData.length > 0) {
+                                    frecuenciaData.forEach(frecuencia => {
+                                        const option = document.createElement('option');
+                                        option.value = frecuencia.id_frecuencia;
+                                        option.textContent = frecuencia.nombre;
+                                        
+                                        // Evitar duplicar la opción seleccionada previamente
+                                        if (frecuencia.id_frecuencia !== '<%= user.id_frecuencia %>') {
+                                            frecuenciaSelect.appendChild(option);
+                                        }
+                                    });
+                                } else {
+                                    const option = document.createElement('option');
+                                    option.value = '';
+                                    option.textContent = 'No hay tipos de reporte disponibles';
+                                    frecuenciaSelect.appendChild(option);
+                                }
+                            } catch (error) {
+                                console.error('Error:', error);
+                                const frecuenciaSelect = document.getElementById('frecuencia');
+                                frecuenciaSelect.innerHTML = '<option value="" disabled>Selecciona</option>';
+                                const option = document.createElement('option');
+                                option.value = '';
+                                option.textContent = 'Error al cargar los tipos de reporte';
+                                frecuenciaSelect.appendChild(option);
+                            }
+                        });
+                
+                        // Validación antes de enviar el formulario
+                        document.querySelector('form').addEventListener('submit', function(event) {
+                            const frecuenciaSelect = document.getElementById('frecuencia');
+                            if (frecuenciaSelect.value === "") {
+                                event.preventDefault();
+                                alert("Por favor, selecciona un Tipo Reporte.");
+                            }
+                        });
+                    </script> 	                    
                 </div>                
                 <div class="col-md-2">
                     <div class="mb-3">
                         <label for="repositorio" class="form-label">REPOSITORIO</label>                        
                         <select class="custom-select rounded-0" style="width: 100%;"  id="repositorio" name="repositorio" tabindex="7" >
-                            <option value="<%= user.repositorio %>" selected><%= user.repositorio %></option>
-                            <option>FTP</option>
-                            <option>Power BI</option>                            
-                            <option>Tableau</option>
-                            <option>Otro</option>                            
+                            <option value="<%= user.id_repositorio %>" selected><%= user.repositorio %></option>                                                       
                         </select>               
-                    </div>                                        
+                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', async () => {
+                            try {
+                                const response = await fetch('/repositorio');
+                                if (!response.ok) {
+                                    throw new Error('Error al obtener los tipos de reporte');
+                                }
+                                const repositorioData = await response.json();
+                
+                                const repositorioSelect = document.getElementById('repositorio');
+                
+                                // Mantener la opción seleccionada del usuario en la parte superior
+                                repositorioSelect.innerHTML += '<option value="" disabled>Selecciona</option>'; // Opción por defecto (si lo necesitas)
+                                
+                                // Agregar las opciones de la API al dropdown
+                                if (repositorioData.length > 0) {
+                                    repositorioData.forEach(repositorio => {
+                                        const option = document.createElement('option');
+                                        option.value = repositorio.id_repositorio;
+                                        option.textContent = repositorio.nombre;
+                                        
+                                        // Evitar duplicar la opción seleccionada previamente
+                                        if (repositorio.id_repositorio !== '<%= user.id_repositorio %>') {
+                                            repositorioSelect.appendChild(option);
+                                        }
+                                    });
+                                } else {
+                                    const option = document.createElement('option');
+                                    option.value = '';
+                                    option.textContent = 'No hay tipos de reporte disponibles';
+                                    repositorioSelect.appendChild(option);
+                                }
+                            } catch (error) {
+                                console.error('Error:', error);
+                                const repositorioSelect = document.getElementById('repositorio');
+                                repositorioSelect.innerHTML = '<option value="" disabled>Selecciona</option>';
+                                const option = document.createElement('option');
+                                option.value = '';
+                                option.textContent = 'Error al cargar los tipos de reporte';
+                                repositorioSelect.appendChild(option);
+                            }
+                        });
+                
+                        // Validación antes de enviar el formulario
+                        document.querySelector('form').addEventListener('submit', function(event) {
+                            const repositorioSelect = document.getElementById('repositorio');
+                            if (repositorioSelect.value === "") {
+                                event.preventDefault();
+                                alert("Por favor, selecciona un Tipo Reporte.");
+                            }
+                        });
+                    </script>                                         
                 </div>
                 <div class="col-md-8">
                     <div class="mb-3">
@@ -104,26 +245,121 @@
                     <div class="mb-3">
                         <label for="area" class="form-select">AREA</label>
                         <select class="custom-select rounded-0" id="area" name="area" class="form-select" tabindex="9">
-                          <option value="<%= user.area %>" selected><%= user.area %></option>  
-                          <option value="7">GERENCIA GENERAL</option>
-                          <option value="6">FINANZAS</option>
-                          <option value="5">TECNOLOGIA DE LA INFORMACION</option>
-                          <option value="4">RED & OPERACIONES</option>
-                          <option value="3">SERVICIOS ADMINISTRATIVOS - ASUNTOS CORPORATIVOS</option>
-                          <option value="8">SERVICIOS ADMINISTRATIVOS</option>
-                          <option value="9">MERCADEO Y VENTAS</option>
+                          <option value="<%= user.id_area %>" selected><%= user.area %></option>                            
                         </select>
-                      </div>
+                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', async () => {
+                            try {
+                                const response = await fetch('/area');
+                                if (!response.ok) {
+                                    throw new Error('Error al obtener los tipos de reporte');
+                                }
+                                const areaData = await response.json();
+                
+                                const areaSelect = document.getElementById('area');
+                
+                                // Mantener la opción seleccionada del usuario en la parte superior
+                                areaSelect.innerHTML += '<option value="" disabled>Selecciona</option>'; // Opción por defecto (si lo necesitas)
+                                
+                                // Agregar las opciones de la API al dropdown
+                                if (areaData.length > 0) {
+                                    areaData.forEach(area => {
+                                        const option = document.createElement('option');
+                                        option.value = area.id_area;
+                                        option.textContent = area.nombre;
+                                        
+                                        // Evitar duplicar la opción seleccionada previamente
+                                        if (area.id_area !== '<%= user.id_area %>') {
+                                            areaSelect.appendChild(option);
+                                        }
+                                    });
+                                } else {
+                                    const option = document.createElement('option');
+                                    option.value = '';
+                                    option.textContent = 'No hay tipos de reporte disponibles';
+                                    areaSelect.appendChild(option);
+                                }
+                            } catch (error) {
+                                console.error('Error:', error);
+                                const areaSelect = document.getElementById('area');
+                                areaSelect.innerHTML = '<option value="" disabled>Selecciona</option>';
+                                const option = document.createElement('option');
+                                option.value = '';
+                                option.textContent = 'Error al cargar los tipos de reporte';
+                                areaSelect.appendChild(option);
+                            }
+                        });
+                
+                        // Validación antes de enviar el formulario
+                        document.querySelector('form').addEventListener('submit', function(event) {
+                            const areaSelect = document.getElementById('area');
+                            if (areaSelect.value === "") {
+                                event.preventDefault();
+                                alert("Por favor, selecciona un Tipo Reporte.");
+                            }
+                        });
+                    </script>
                 </div>
                 <div class="col-md-2">
                     <div class="mb-3">
                         <label for="producto" class="form-select">PRODUCTO</label>
                         <select class="custom-select rounded-0" id="producto" name="producto" class="form-select" tabindex="10">
-                          <option value="<%= user.producto %>" selected><%= user.producto %></option>    
-                          <option value="Prepago">Prepago</option>
-                          <option value="Postpago">Postpago</option>
+                          <option value="<%= user.id_producto %>" selected><%= user.producto %></option>                              
                         </select>
                     </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', async () => {
+                            try {
+                                const response = await fetch('/producto');
+                                if (!response.ok) {
+                                    throw new Error('Error al obtener los tipos de reporte');
+                                }
+                                const productoData = await response.json();
+                
+                                const productoSelect = document.getElementById('producto');
+                
+                                // Mantener la opción seleccionada del usuario en la parte superior
+                                productoSelect.innerHTML += '<option value="" disabled>Selecciona</option>'; // Opción por defecto (si lo necesitas)
+                                
+                                // Agregar las opciones de la API al dropdown
+                                if (productoData.length > 0) {
+                                    productoData.forEach(producto => {
+                                        const option = document.createElement('option');
+                                        option.value = producto.id_producto;
+                                        option.textContent = producto.nombre;
+                                        
+                                        // Evitar duplicar la opción seleccionada previamente
+                                        if (producto.id_producto !== '<%= user.id_producto %>') {
+                                            productoSelect.appendChild(option);
+                                        }
+                                    });
+                                } else {
+                                    const option = document.createElement('option');
+                                    option.value = '';
+                                    option.textContent = 'No hay tipos de reporte disponibles';
+                                    productoSelect.appendChild(option);
+                                }
+                            } catch (error) {
+                                console.error('Error:', error);
+                                const productoSelect = document.getElementById('producto');
+                                productoSelect.innerHTML = '<option value="" disabled>Selecciona</option>';
+                                const option = document.createElement('option');
+                                option.value = '';
+                                option.textContent = 'Error al cargar los tipos de reporte';
+                                productoSelect.appendChild(option);
+                            }
+                        });
+                
+                        // Validación antes de enviar el formulario
+                        document.querySelector('form').addEventListener('submit', function(event) {
+                            const productoSelect = document.getElementById('producto');
+                            if (productoSelect.value === "") {
+                                event.preventDefault();
+                                alert("Por favor, selecciona un Tipo Reporte.");
+                            }
+                        });
+                    </script> 
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
@@ -135,25 +371,95 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="mb-3">
-                        <label for="hora_ejecucion" class="form-label">HORA EJECUCION</label>
-                        <input type="text" class="form-control" id="hora_ejecucion" name="hora_ejecucion" tabindex="12" value="<%= user.hora_ejecucion %>" required>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="mb-3">
-                        <label for="usuario" class="form-select">EDITADO POR</label>
-                        <select class="custom-select rounded-0"  id="usuario" name="usuario" class="form-select">
-                          <option value="<%= userName %>" selected><%= userName %></option>                          
-                        </select>
+                        <label for="fuente" class="form-label">FUENTE</label>
+                        <input type="text" class="form-control" id="fuente" name="fuente" tabindex="12" value="<%= user.fuente %>" required>
                     </div>                    
                 </div>
-            </div>                         
-            <button type="submit" class="btn btn-primary" tabindex="13">GUARDAR</button>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="nivel_informacion" class="form-select">NIVEL INFORMACION</label>
+                        <select class="custom-select rounded-0" id="nivel_informacion" name="nivel_informacion" class="form-select" tabindex="13">
+                          <option value="<%= user.id_nivel_informacion %>" selected><%= user.nivel_informacion %></option>                            
+                        </select>
+                    </div>                    
+                    <script>
+                        document.addEventListener('DOMContentLoaded', async () => {
+                            try {
+                                const response = await fetch('/nivel_informacion');
+                                if (!response.ok) {
+                                    throw new Error('Error al obtener los tipos de reporte');
+                                }
+                                const nivel_informacionData = await response.json();
+                
+                                const nivel_informacionSelect = document.getElementById('nivel_informacion');
+                
+                                // Mantener la opción seleccionada del usuario en la parte superior
+                                nivel_informacionSelect.innerHTML += '<option value="" disabled>Selecciona</option>'; // Opción por defecto (si lo necesitas)
+                                
+                                // Agregar las opciones de la API al dropdown
+                                if (nivel_informacionData.length > 0) {
+                                    nivel_informacionData.forEach(nivel_informacion => {
+                                        const option = document.createElement('option');
+                                        option.value = nivel_informacion.id_nivel_informacion;
+                                        option.textContent = nivel_informacion.nombre;
+                                        
+                                        // Evitar duplicar la opción seleccionada previamente
+                                        if (nivel_informacion.id_nivel_informacion !== '<%= user.id_nivel_informacion %>') {
+                                            nivel_informacionSelect.appendChild(option);
+                                        }
+                                    });
+                                } else {
+                                    const option = document.createElement('option');
+                                    option.value = '';
+                                    option.textContent = 'No hay tipos de reporte disponibles';
+                                    nivel_informacionSelect.appendChild(option);
+                                }
+                            } catch (error) {
+                                console.error('Error:', error);
+                                const nivel_informacionSelect = document.getElementById('nivel_informacion');
+                                nivel_informacionSelect.innerHTML = '<option value="" disabled>Selecciona</option>';
+                                const option = document.createElement('option');
+                                option.value = '';
+                                option.textContent = 'Error al cargar los tipos de reporte';
+                                nivel_informacionSelect.appendChild(option);
+                            }
+                        });
+                
+                        // Validación antes de enviar el formulario
+                        document.querySelector('form').addEventListener('submit', function(event) {
+                            const nivel_informacionSelect = document.getElementById('nivel_informacion');
+                            if (nivel_informacionSelect.value === "") {
+                                event.preventDefault();
+                                alert("Por favor, selecciona un Tipo Reporte.");
+                            }
+                        });
+                    </script> 
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="hora_ejecucion" class="form-label">HORA EJECUCION</label>
+                        <input type="text" class="form-control" id="hora_ejecucion" name="hora_ejecucion" tabindex="14" value="<%= user.hora_ejecucion %>" required>
+                    </div>                    
+                </div>
+            </div>  
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="mb-3">
+                        <label for="descripcion">DESCRIPCIÓN</label>
+                        <input type="text" class="form-control" id="descripcion" name="descripcion" tabindex="15" value="<%= user.descripcion %>" required>
+                    </div>                 
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="usuario">REGISTRADO POR</label>
+                        <select class="custom-select rounded-0" id="usuario" name="usuario">
+                          <option value="<%= userName %>" selected><%= userName %></option>                          
+                        </select>
+                    </div>  
+                </div>                
+            </div>
+                  
+            <button type="submit" class="btn btn-primary" tabindex="16">GUARDAR</button>
             <a href="/inventarioReportes" class="btn btn-secondary">CANCELAR</a>
           </form>            
         </div><!-- /.card-body -->

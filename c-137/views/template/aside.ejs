@@ -25,10 +25,9 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
-          <li class="nav-header">MENU</li>
+          <li class="nav-header">MENU</li>		  
 		  
-		  
-		      <% if (user.TODOS_REPORTES === 1 || user.MIS_REPORTES === 1) { %>      
+		      <% if (user1.TODOS_REPORTES === 1 || user1.MIS_REPORTES === 1) { %>      
           <li class="nav-item">
             <a href="#" class="nav-link">                            
               <i class="nav-icon fas fa-solid fa-folder-open"></i>              
@@ -38,7 +37,7 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
-              <% if (user.MIS_REPORTES === 1) { %>
+              <% if (user1.MIS_REPORTES === 1) { %>
               <li class="nav-item">
                 <a href="/download" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
@@ -46,11 +45,11 @@
                 </a>
               </li>
               <% } %> 
-              <% if (user.TODOS_REPORTES === 1) { %>                
+              <% if (user1.TODOS_REPORTES === 1) { %>                
               <li class="nav-item">
                 <a href="/todo_reportes" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>TODOS LOS REPORTES</p>
+                  <p>LISTA DE REPORTES</p>
                 </a>
               </li>
               <% } %> 
@@ -59,6 +58,7 @@
           </li> 
           <% } %>
           
+          <% if (user1.INVENTARIO_REPORTES === 1 || user1.INVENTARIO_TABLAS === 1 || user1.INVENTARIO_PROCESOS === 1) { %>     
           <li class="nav-item">
             <a href="#" class="nav-link">                            
               <i class="nav-icon fas fa-solid fa-list-check"></i>              
@@ -68,29 +68,35 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
+              <% if (user1.INVENTARIO_REPORTES === 1) { %> 
               <li class="nav-item">
                 <a href="/inventarioReportes" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>REPORTES</p>
                 </a>
               </li>
+              <% } %>
+              <% if (user1.INVENTARIO_TABLAS === 1) { %> 
               <li class="nav-item">
                 <a href="/inventarioTablas" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>TABLAS</p>
                 </a>
               </li>
+              <% } %>
+              <% if (user1.INVENTARIO_PROCESOS === 1) { %> 
               <li class="nav-item">
                 <a href="/inventarioProcesos" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>PROCESOS</p>
                 </a>
               </li>
+              <% } %>
             </ul>
           </li>
+          <% } %>
 
-
-          <% if (userRol === 'Admin' || userRol === 'Jira') { %>
+          <% if (user1.MONITOR_CALIDAD === 1 || user1.MONITOR_SERVIDORES === 1 || user1.MONITOR_JIRA === 1) { %>   
           <li class="nav-item">
             <a href="#" class="nav-link">                            
               <i class="nav-icon fas fa-tachometer-alt"></i>           
@@ -100,6 +106,7 @@
               </p>
             </a>            
             <ul class="nav nav-treeview"> 
+              <% if (user1.MONITOR_CALIDAD === 1) { %>
               <li class="nav-item">
                 <a href="#" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
@@ -122,6 +129,12 @@
                     </a>
                   </li>                  
                   <li class="nav-item">
+                    <a href="/traficoVoz" class="nav-link">
+                      <i class="far fa-dot-circle nav-icon ml-3"></i>
+                      <p>trafico voz **</p>
+                    </a>
+                  </li>                                    
+                  <li class="nav-item">
                     <a href="/voneVsDwh" class="nav-link">
                       <i class="far fa-dot-circle nav-icon ml-3"></i>
                       <p>vone vs. dwh **</p>
@@ -141,8 +154,8 @@
                   </li>                                    
                 </ul>
               </li> 
-
-              <% if (userRol === 'Admin') { %>
+              <% } %>
+              <% if (user1.MONITOR_SERVIDORES === 1) { %>
               <li class="nav-item">
                 <a href="#" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
@@ -232,17 +245,19 @@
                 </ul>
               </li> 
               <% } %> 
-
+              <% if (user1.MONITOR_JIRA === 1) { %>
               <li class="nav-item">
                 <a href="/monitorJira" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>JIRA</p>
                 </a>
               </li>
+              <% } %> 
             </ul>            
           </li>
           <% } %>  
 
+<<<<<<< HEAD
                     <% if (userRol === 'Admin') { %>             
                       <li class="nav-item">
                           <a href="#" class="nav-link">                            
@@ -308,6 +323,37 @@
                           </ul>
                       </li>  
                     <% } %>        
+=======
+          <% if (user1.ADMINISTRADOR_USUARIOS === 1 || user1.ADMINISTRADOR_ACCESO_REPORTES === 1) { %>              
+            <li class="nav-item">
+                <a href="#" class="nav-link">                            
+                    <i class="nav-icon fas fa-solid fa-user-tie"></i>              
+                    <p>
+                        ADMINISTRADOR
+                        <i class="fas fa-angle-left right"></i>
+                    </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <% if (user1.ADMINISTRADOR_USUARIOS === 1) { %>
+                    <li class="nav-item">
+                        <a href="/users" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>USUARIOS</p>
+                        </a>
+                    </li>
+                    <% } %> 
+                    <% if (user1.ADMINISTRADOR_ACCESO_REPORTES === 1) { %>
+                    <li class="nav-item">
+                        <a href="/Acceso_reportes" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>ACCESO REPORTES</p>
+                        </a>
+                    </li>
+                    <% } %>              
+                </ul>
+            </li>  
+          <% } %>        
+>>>>>>> 0e3b5ef78f780bf362a3deb438739af938488c5b
 
           <li class="nav-item">
             <a href="/logout" class="nav-link">
