@@ -84,18 +84,65 @@
             </div>   
             <div class="row">
                 <div class="col-md-4">
-                    <div class="mb-3">
-                        <label for="area" class="form-select">AREA</label>
-                        <select class="custom-select rounded-0" id="area" name="area" class="form-select" tabindex="7">
-                          <option value="7" selected>GERENCIA GENERAL</option>
-                          <option value="6">FINANZAS</option>
-                          <option value="5">TECNOLOGIA DE LA INFORMACION</option>
-                          <option value="4">RED & OPERACIONES</option>
-                          <option value="3">SERVICIOS ADMINISTRATIVOS - ASUNTOS CORPORATIVOS</option>
-                          <option value="8">SERVICIOS ADMINISTRATIVOS</option>
-                          <option value="9">MERCADEO Y VENTAS</option>
-                        </select>
-                      </div>
+               
+                    
+
+
+<!-- ----------------------------------------- --><div class="mb-3">
+    <label for="area" class="form-select">AREA</label>
+    <select class="custom-select rounded-0" id="area" name="area" class="form-select" tabindex="7">
+        <option value="">Cargando áreas...</option> <!-- Opciones iniciales -->
+    </select>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const response = await fetch('/area22');
+            if (!response.ok) {
+                throw new Error('Error al obtener las áreas');
+            }
+            const areaData = await response.json();
+
+            const areaSelect = document.getElementById('area');
+            areaSelect.innerHTML = ''; // Limpiar las opciones actuales
+
+            if (areaData.length > 0) {
+                areaData.forEach(area => {
+                    const option = document.createElement('option');
+                    option.value = area.id_area; // Guardar el id_area como valor
+                    option.textContent = area.nombre; // Mostrar el nombre
+                    areaSelect.appendChild(option);
+                });
+            } else {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'No hay áreas disponibles';
+                areaSelect.appendChild(option);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            const areaSelect = document.getElementById('area');
+            areaSelect.innerHTML = ''; // Limpiar las opciones actuales
+            const option = document.createElement('option');
+            option.value = '';
+            option.textContent = 'Error al cargar áreas';
+            areaSelect.appendChild(option);
+        }
+    });
+</script>
+
+
+
+
+
+
+
+<!-- ----------------------------------------- -->
+
+
+
+
                 </div>
                 <div class="col-md-2">
                     <div class="mb-3">

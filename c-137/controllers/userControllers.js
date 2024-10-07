@@ -333,7 +333,7 @@ exports.Acceso_reportes_Edit = (req, res) => {
                 console.error(error);
                 res.status(500).send('Error al actualizar el registro');
             } else {
-                res.redirect('/Acceso_reportes');
+                res.redirect('/accesoReportes');
             }
         }
     );
@@ -368,7 +368,7 @@ exports.updateAcesso_reporte = (req, res) => {
             res.status(500).send('Error al actualizar el reporte');
         } else {
             // Redirigir a la página de inventario/reportes una vez actualizado
-            res.redirect('/Acceso_reportes');
+            res.redirect('/accesoReportes');
         }
     });
 };
@@ -401,7 +401,7 @@ exports.saveAcceso = async (req, res) => {
                         userName: usuario
                     });
                 } else {
-                    res.redirect('/Acceso_reportes');
+                    res.redirect('/accesoReportes');
                 }
             }
         );

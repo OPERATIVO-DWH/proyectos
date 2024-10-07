@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfico de Líneas con Animación de Entrada</title>
+    <script src="highcharts.js"></script>
+</head>
+<body>
+    <div id="container" style="width: 100%; height: 400px;"></div>
+
+    <script>
+        // Función para cargar los datos de la base de datos
+        async function cargarDatosTendencia() {
+            try {
+                // Realizar la solicitud GET para obtener los datos de la base de datos
+                const response = await fetch('/tendencias-data');
+                const datos = await response.json();
+    
+                // Función para reemplazar valores 0 o null con null para que no se dibujen
+                function filtrarValores(valor) {
+                    return valor === 0 ? null : valor;
+                }
+    
+                // Extraer los datos en formato adecuado para el gráfico, filtrando los valores 0
+                const superiores = datos.map(item => filtrarValores(item.superior));
+                const medias = datos.map(item => filtrarValores(item.media));
+                const inferiores = datos.map(item => filtrarValores(item.inferior));
+                const periodos = datos.map(item => item.periodo); // Extraer los periodos
+    
+                // Inicializar el gráfico de Highcharts
+                Highcharts.chart('container', {
+                    chart: {
+                        type: 'line',
+                        events: {
+                            load: function () {
+                                var series = this.series;
+                                series.forEach(function (s) {
+                                    s.update({
+                                        animation: {
+                                            duration: 2000,
+                                            easing: 'easeOutBounce'
+                                        }
+                                    });
+                                });
+                            }
+                        }
+                    },
+                    title: {
+                        text: 'Tendencia Dinámica de la Base de Datos'
+                    },
+                    xAxis: {
+                        categories: periodos // Usar los periodos dinámicos (Enero, Febrero, etc.)
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Valores'
+                        }
+                    },
+                    series: [{
+                        name: 'Superior',
+                        data: superiores
+                    }, {
+                        name: 'Media',
+                        data: medias
+                    }, {
+                        name: 'Inferior',
+                        data: inferiores
+                    }]
+                });
+            } catch (error) {
+                console.error('Error al cargar los datos del gráfico:', error);
+            }
+        }
+    
+        // Cargar los datos cuando la página esté lista
+        document.addEventListener('DOMContentLoaded', cargarDatosTendencia);
+    </script>
+    
+</body>
+</html>

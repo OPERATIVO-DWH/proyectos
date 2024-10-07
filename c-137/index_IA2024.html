@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Datos de Tráfico por Aplicación</title>
+</head>
+<body>
+  <h1>Datos de Tráfico por Aplicación</h1>
+
+  <div id="table-container">
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Aplicación</th>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>MB</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        <!-- Aquí se insertarán las filas de la tabla dinámicamente -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // Función para obtener los datos y renderizarlos en la tabla
+    async function fetchAndRenderData() {
+      // Cambia estos parámetros según sea necesario
+      const fechaInicio = '2023-01-01';
+      const fechaFin = '2023-12-31';
+      const nroTelefono = '123456789';
+
+      const response = await fetch(`/tendencias-data?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}&nroTelefono=${nroTelefono}`);
+      const data = await response.json();
+
+      const tableBody = document.getElementById('table-body');
+
+      Object.keys(data).forEach(app => {
+        data[app].forEach(item => {
+          const row = document.createElement('tr');
+
+          const appCell = document.createElement('td');
+          appCell.textContent = app;
+          row.appendChild(appCell);
+
+          const fechaCell = document.createElement('td');
+          fechaCell.textContent = item.fecha;
+          row.appendChild(fechaCell);
+
+          const horaCell = document.createElement('td');
+          horaCell.textContent = item.hora;
+          row.appendChild(horaCell);
+
+          const mbCell = document.createElement('td');
+          mbCell.textContent = item.mb.toFixed(2) + ' MB';
+          row.appendChild(mbCell);
+
+          tableBody.appendChild(row);
+        });
+      });
+    }
+
+    // Llamar a la función al cargar la página
+    fetchAndRenderData();
+  </script>
+</body>
+</html>

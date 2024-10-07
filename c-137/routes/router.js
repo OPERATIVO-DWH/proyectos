@@ -1198,7 +1198,7 @@ router.get('/todo_reportes', authControllers.isAuthenticate, (req, res) => {
 
 
 
-router.get('/Acceso_reportes', authControllers.isAuthenticate, (req, res) => {
+router.get('/accesoReportes', authControllers.isAuthenticate, (req, res) => {
     let query;
     let queryParams = [];
 
@@ -1221,9 +1221,10 @@ router.get('/Acceso_reportes', authControllers.isAuthenticate, (req, res) => {
 
         // Proceso adicional si es necesario (como calcular mtime o estados)
 
-        res.render('Acceso_reportes', { results, userName: req.user.email, userRol: req.user.rol,user: req.user });
+        res.render('accesoReportes', { results, userName: req.user.email, userRol: req.user.rol,user: req.user });
     });
 });
+
 
 
 
@@ -1287,12 +1288,12 @@ router.get('/deleteAcceso/:id', authControllers.isAuthenticate, (req, res) => {
                 throw error;
             } else {
                 // Redirigir a la vista de inventarioReportes después de la eliminación
-                res.redirect('/Acceso_reportes');
+                res.redirect('/accesoReportes');
             }
         });
     } else {
         // Redirigir a la vista de inventarioReportes con un mensaje de error o de no autorizado si no es admin
-        res.redirect('/Acceso_reportes?error=NO_TIENE_PERMISO');
+        res.redirect('/accesoReportes?error=NO_TIENE_PERMISO');
     }
 });
 
@@ -1664,6 +1665,155 @@ router.get('/monitorJira', authControllers.isAuthenticate, async (req, res) => {
         res.status(500).send('Error en el servidor');
     }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+ //-----------------------------------------------------------------
+
+
+    router.get('/accesoReportes22', authControllers.isAuthenticate, (req, res) => {
+        let query = '';
+        let queryParams = [];
+
+        if (req.user.rol === "Admin") {
+            query = `SELECT superior, media, inferior, periodo FROM tendencia`;
+        } else if (req.user.rol === "Suscriptor") {
+            return res.render('index', { userName: req.user.email, titleweb: 'Inicio' });
+        } else {
+            return res.status(403).send('Acceso denegado');
+        }
+
+        conexion.query(query, queryParams, (error, results) => {
+            if (error) {
+                console.error('Error en la consulta:', error);
+                return res.status(500).send('Error en el servidor');
+            }
+
+            if (results.length === 0) {
+                console.log('No se encontraron datos.');
+                return res.status(404).send('No se encontraron datos.');
+            }
+
+            const datosTendencia = results.map(row => ({
+                superior: Number(row.superior),
+                media: Number(row.media),
+                inferior: Number(row.inferior),
+                periodo: row.periodo
+            }));
+
+            console.log('Datos obtenidos de la base de datos:', datosTendencia);
+
+            // Renderiza la vista con los datos
+            res.render('accesoReportes22', {
+                results: datosTendencia,
+                userName: req.user.email,
+                userRol: req.user.rol,
+                user: req.user,
+                jsonDatosTendencia: JSON.stringify(datosTendencia) // Pasar datos en formato JSON
+            });
+        });
+    });
+
+
+    router.get('/tendencias-data', authControllers.isAuthenticate, (req, res) => {
+        let query = `SELECT superior, media, inferior, periodo FROM tendencia`;
+        let queryParams = [];
+    
+        // Verificar el rol del usuario
+        if (req.user.rol === "Admin") {
+            conexion.query(query, queryParams, (error, rows) => {
+                if (error) {
+                    console.error('Error en la consulta:', error);
+                    return res.status(500).send('Error al obtener los datos de la tendencia: ' + error.message);
+                }
+    
+                // Mapea los datos obtenidos para asegurarte de que la estructura sea la adecuada y los tipos sean correctos
+                const datosTendencia = rows.map(row => ({
+                    superior: Number(row.superior), // Convertir a número
+                    media: Number(row.media),       // Convertir a número
+                    inferior: Number(row.inferior), // Convertir a número
+                    periodo: row.periodo
+                }));
+    
+                console.log('Datos obtenidos de la base de datos:', datosTendencia); // Muestra los datos obtenidos
+    
+                if (datosTendencia.length === 0) {
+                    return res.status(404).send('No se encontraron datos.');
+                }
+    
+                // Devolver los datos en formato JSON
+                res.json(datosTendencia);
+            });
+        } else if (req.user.rol === "Suscriptor") {
+            res.render('index', { userName: req.user.email, titleweb: 'Inicio' });
+        } else {
+            res.status(403).send('Acceso denegado.');
+        }
+    });
+    
+//-----------------------------------------------------------------
+
+
+ 
+
+router.get('/area22', authControllers.isAuthenticate, (req, res) => {
+    let query = `
+SELECT concat(a.nombre, '  -  ' , b.descripcion)as nombre,a.id_area FROM area a  , organizacion b
+WHERE a.id_organizacion=b.id_organizacion
+ORDER BY a.nombre asc`;
+    let queryParams = [];
+
+    // Verificar el rol del usuario
+    if (req.user.rol === "Admin") {
+        conexion.query(query, queryParams, (error, rows) => {
+            if (error) {
+                console.error('Error en la consulta:', error);
+                return res.status(500).send('Error al obtener los datos: ' + error.message);
+            }
+
+            // Mapea los datos a un array de objetos con id_area y nombre
+            const areaData = rows.map(row => ({
+                id_area: row.id_area,
+                nombre: row.nombre
+            }));
+
+            console.log('Datos de áreas obtenidos de la base de datos:', areaData); // Muestra los datos obtenidos
+
+            if (areaData.length === 0) {
+                return res.status(404).send('No se encontraron datos.');
+            }
+
+            // Devolver los datos en formato JSON
+            res.json(areaData);
+        });
+    } else if (req.user.rol === "Suscriptor") {
+        res.render('index', { userName: req.user.email, titleweb: 'Inicio' });
+    } else {
+        res.status(403).send('Acceso denegado.');
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
 
 router.post('/updateFecha', userControllers.updateFecha); 
 

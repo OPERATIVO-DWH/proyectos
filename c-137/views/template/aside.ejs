@@ -243,31 +243,71 @@
           </li>
           <% } %>  
 
-          <% if (userRol === 'Admin') { %>             
-            <li class="nav-item">
-                <a href="#" class="nav-link">                            
-                    <i class="nav-icon fas fa-solid fa-user-tie"></i>              
-                    <p>
-                        ADMINISTRADOR
-                        <i class="fas fa-angle-left right"></i>
-                    </p>
-                </a>
-                <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                        <a href="/users" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i>
-                            <p>USUARIOS</p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/Acceso_reportes" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i>
-                            <p>ACCESO REPORTES</p>
-                        </a>
-                    </li>              
-                </ul>
-            </li>  
-          <% } %>        
+                    <% if (userRol === 'Admin') { %>             
+                      <li class="nav-item">
+                          <a href="#" class="nav-link">                            
+                              <i class="nav-icon fas fa-solid fa-user-tie"></i>              
+                              <p>
+                                  ADMINISTRADOR
+                                  <i class="fas fa-angle-left right"></i>
+                              </p>
+                          </a>
+
+
+
+
+                      <!-- /.sub menus -->
+                          <ul class="nav nav-treeview"> 
+                            <li class="nav-item">
+                              <a href="#" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>
+                                  ADMIN CARGO
+                                  <i class="right fas fa-angle-left"></i>
+                                </p>
+                              </a>
+                              <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                  <a href="/dlms" class="nav-link">
+                                    <i class="far fa-dot-circle nav-icon ml-3"></i>
+                                    <p>CARGO</p>
+                                  </a>
+                                </li>
+                              </ul>
+                            </li>
+                          </ul>
+
+                        <!-- /.sub menus -->
+
+
+
+                          <ul class="nav nav-treeview">
+                              <li class="nav-item">
+                                  <a href="/users" class="nav-link">
+                                      <i class="far fa-circle nav-icon"></i>
+                                      <p>USUARIOS</p>
+                                  </a>
+                              </li>
+                              <li class="nav-item">
+                                  <a href="/accesoReportes" class="nav-link">
+                                      <i class="far fa-circle nav-icon"></i>
+                                      <p>ACCESO REPORTES</p>
+                                  </a>
+                              </li>      
+                              
+                              
+                              <li class="nav-item">
+                                <a href="/accesoReportes22" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>TENDENCIAS</p>
+                                </a>
+                            </li>   
+
+                            
+
+                          </ul>
+                      </li>  
+                    <% } %>        
 
           <li class="nav-item">
             <a href="/logout" class="nav-link">

@@ -1,0 +1,178 @@
+<%- include("template/header") %>
+<%- include("template/navbar") %>
+<%- include("template/aside") %>
+
+<div class="content-wrapper"> 
+  <%- include('template/breadcrumb', { module: 'ACCESO REPORTES', module1: 'ADMINISTRADOR / ACCESO REPORTES' }) %> 
+  <section class="content">
+    <div class="container-fluid">
+
+      <!-- Botón de impresión -->
+      <button id="btnImprimir" class="btn btn-secondary mb-3" onclick="imprimirContenido()">Descargar graficas <i class="fa-solid fa-print"></i></button>
+
+      <!-- Gráfico de tendencia con borde similar a Panel 1 -->
+      <div class="card card-info">
+        <div class="card-header">
+            <h4 class="card-title">Gráfico de Tendencia</h4>
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Minimizar">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove" title="Eliminar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div id="container" style="width: 100%; height: 400px;"></div>
+        </div>
+    </div>
+    
+      <!-- Nuevo borde con título "Datos" alrededor de la tabla -->
+      <div class="card border-info card-outline">
+        <div class="card-header bg-info text-white">
+            <h4 class="card-title">Datos</h4>
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Minimizar">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove" title="Eliminar">
+                    <i class="fas fa-times"></i>
+                </button>
+             </div>
+          </div>
+        <div class="card-body">
+            <!-- Botón de nuevo -->
+            <a href="/AccesoreportesCreate" class="btn btn-primary mt-4 mb-2">NUEVO <i class="fa-solid fa-square-plus"></i></a>
+            <!-- Tabla con el estilo responsive y stripe -->
+            <table id="example1" class="table table-striped mt-4 table-responsive">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">SUPERIOR</th>
+                        <th scope="col">MEDIA</th>
+                        <th scope="col">INFERIOR</th>
+                        <th scope="col">PERIODO</th>
+                        <th scope="col">ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% results.forEach((report) => { %>
+                    <tr>
+                        <td><%= report.superior %></td>
+                        <td><%= report.media %></td>
+                        <td><%= report.inferior %></td>
+                        <td><%= report.periodo %></td>
+                        <td>
+                            <a href="/Acceso_reportes_Edit/<%= report.id %>" class="btn btn-primary" data-toggle="tooltip" title="EDITAR">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <a href="#" onclick="confirmationAccesos('<%= report.id %>'); return false;" class="btn btn-danger" data-toggle="tooltip" title="BORRAR">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    </div>
+  </section>
+</div>
+
+<!-- CSS para ajustar la impresión -->
+<style>
+  @media print {
+      #container {
+          width: 100% !important;  /* Asegúrate de que ocupe todo el ancho */
+          height: 800px !important; /* Ajusta la altura según lo que necesites */
+      }
+  }
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+<script src="highcharts_copy.js"></script>
+<script>
+  // Función para cargar los datos de la base de datos
+  async function cargarDatosTendencia() {
+      try {
+          const response = await fetch('/tendencias-data');
+          const datos = await response.json();
+          function filtrarValores(valor) {
+              return valor === 0 ? null : valor;
+          }
+          const superiores = datos.map(item => filtrarValores(item.superior));
+          const medias = datos.map(item => filtrarValores(item.media));
+          const inferiores = datos.map(item => filtrarValores(item.inferior));
+          const periodos = datos.map(item => item.periodo);
+
+          Highcharts.chart('container', {
+              chart: {
+                  type: 'line',
+                  width: 800,  // Ajusta el ancho según sea necesario
+                  height: 400, // Ajusta la altura según sea necesario
+                  events: {
+                      load: function () {
+                          var series = this.series;
+                          series.forEach(function (s) {
+                              s.update({
+                                  animation: {
+                                      duration: 2000,
+                                      easing: 'easeOutBounce'
+                                  }
+                              });
+                          });
+                      }
+                  }
+              },
+              title: {
+                  text: 'Tendencia Dinámica de la Base de Datos'
+              },
+              xAxis: {
+                  categories: periodos
+              },
+              yAxis: {
+                  title: {
+                      text: 'Valores'
+                  }
+              },
+              series: [{
+                  name: 'Superior',
+                  data: superiores
+              }, {
+                  name: 'Media',
+                  data: medias
+              }, {
+                  name: 'Inferior',
+                  data: inferiores
+              }],
+              credits: {
+                  enabled: false
+              }
+          });
+      } catch (error) {
+          console.error('Error al cargar los datos del gráfico:', error);
+      }
+  }
+  
+  // Función para imprimir el contenido
+  function imprimirContenido() {
+      const element = document.querySelector('.content-wrapper'); // Selector del contenedor que deseas imprimir
+      const options = {
+          margin:       1,
+          filename:     'reporte.pdf',
+          image:        { type: 'jpeg', quality: 0.98 },
+          html2canvas:  { scale: 2, width: 800, height: 400 }, // Ajusta el tamaño aquí si es necesario
+          jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+
+      // Genera el PDF a partir del contenido del elemento
+      html2pdf().from(element).set(options).save();
+  }
+
+  // Cargar los datos cuando la página esté lista
+  document.addEventListener('DOMContentLoaded', cargarDatosTendencia);
+</script>
+
+<%- include("template/footer") %>
