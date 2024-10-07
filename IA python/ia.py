@@ -3,7 +3,6 @@ import pyodbc
 from langchain_community.llms import Ollama
 import mysql.connector
 import logging
-
 app = Flask(__name__)
 
 # Configuración del modelo Llama 3.2
@@ -62,7 +61,6 @@ def generar_consulta_sql(pregunta):
         prompt = f"""
         A partir de la pregunta del usuario, genera una consulta SQL válida para Netezza IBM que pueda ejecutarse sobre la consulta_DPI.
         La consulta debe estar relacionada a la siguiente estructura:
-
         consulta_DPI:
         select
         a.FECHA,
@@ -108,7 +106,6 @@ def ejecutar_consulta(consulta, driver, ip_url, usuario, password, base_datos, t
         # Conexión a Netezza con pyodbc
         connection_string = f'DRIVER={driver};SERVER={ip_url};UID={usuario};PWD={password};DATABASE={base_datos};LoginTimeout={timeout}'
         conexion = pyodbc.connect(connection_string)
-
         cursor = conexion.cursor()
         cursor.execute(consulta)
         resultados = cursor.fetchall()  # Obtener todos los resultados
@@ -137,7 +134,6 @@ def consulta():
     # Mostrar la consulta y la pregunta en la consola
     logging.info(f"Pregunta del usuario: {pregunta}")
     logging.info(f"Consulta SQL generada: {consulta_sql}")
-
     # Obtener los parámetros de conexión
     conexion_params = obtener_parametros_conexion()
     if not conexion_params:
