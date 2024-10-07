@@ -7,8 +7,8 @@ const { promisify } = require('util');
 const {authenticate} = require('./auth')
 const getUserByEmail = async (email) => {
     const query = 'SELECT * FROM user WHERE email = ?';
-    const [user] = await db.execute(query, [email]);
-    return user;
+    const [user1] = await db.execute(query, [email]);
+    return user1;
   };
 
 //procedimiento para registrar
@@ -153,8 +153,9 @@ exports.login = async (req, res) => {
                         ruta: 'index',
                         userName: results[0].email,
                         userRol: results[0].rol,
-                        user:  results[0],
-                        results: results
+                        // user:  results[0],
+                        results: results,
+                        user1: results[0]
                     });
                 } else {
                     // Autenticación externa fallida (contraseña incorrecta)

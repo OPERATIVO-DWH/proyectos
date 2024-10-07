@@ -4,7 +4,7 @@
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper"> 
-  <%- include('template/breadcrumb', { module: 'TODOS LOS REPORTES', module1: 'REPORTES / TODOS LOS REPORTES' }) %>  
+  <%- include('template/breadcrumb', { module: 'LISTA DE REPORTES', module1: 'REPORTES / LISTA DE REPORTES' }) %>  
   <!-- Main content -->
   <section class="content">
     <div class="container-fluid">
@@ -15,26 +15,37 @@
           <table id="example1" class="table table-striped mt-4 table-responsive">
             <thead class="table-dark">
               <tr>
-                <th scope="col">#ID</th>
+                <th scope="col">#</th>
+                <!-- <th scope="col">ESTADO</th>
+                <th scope="col">FECHA ACTUALIZACION</th> -->                
                 <th scope="col">REPORTE</th>
-                <th scope="col">ESTADO</th>
-                <th scope="col">FECHA ACTUALIZACION</th>
+                <th scope="col">TIPO REPORTE</th>
+                <th scope="col">FRECUENCIA</th>
+                <th scope="col">FUENTE</th>
+                <th scope="col">NIVEL INFORMACION</th>
+                <th scope="col">DESCRIPCION</th>  
               </tr>
             </thead>
 
          
      
             <tbody>
+              <% let count = 1; %> <!-- Definir la variable count aquí -->
               <% results.forEach((user) => { %>
                 <tr>
-                  <td><%= user.id %></td>
-                  <td><%= user.reporte %></td>
-                  <td class="text-center">
+                  <td><%= count++ %></td>   <!-- Incrementar la variable count manualmente -->
+                  <!-- <td class="text-center">
                     <span class="badge <%= user.isToday ? 'bg-success' : 'bg-danger' %>">
                       <%= user.isToday ? 'OK' : 'NOOK' %>
                     </span>
                   </td>
-                  <td><%= user.mtime %></td>
+                  <td><%= user.mtime %></td> -->
+                  <td><%= user.nombre_reporte %></td>
+                  <td><%= user.tipo_reporte %></td>
+                  <td><%= user.frecuencia %></td>
+                  <td><%= user.fuente %></td>
+                  <td><%= user.nivel_informacion %></td>  
+                  <td><%= user.descripcion %></td>
                 </tr> 
               <% }) %>             
             </tbody>

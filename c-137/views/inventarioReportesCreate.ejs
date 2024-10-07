@@ -38,42 +38,165 @@
                 <div class="col-md-2">
                     <div class="mb-3">
                         <label for="tipo_reporte" class="form-label">TIPO REPORTE</label>
-                        <!-- <input type="text" class="form-control" id="tipo_reporte" name="tipo_reporte" tabindex="3">  -->
-                        <select class="custom-select rounded-0" style="width: 100%;"  id="tipo_reporte" name="tipo_reporte" tabindex="3">
-                            <option selected="selected">.xls</option>
-                            <option>.txt o .csv</option>
-                            <!-- <option disabled="disabled">California (disabled)</option> -->
-                            <option>Power BI</option>
-                            <option>Tableau</option>
-                            <option>.zip</option>
-                            <option>Otro</option>
-                        </select>               
-                    </div>                    
-                </div>           
+                        <select class="custom-select rounded-0" style="width: 100%;" id="tipo_reporte" name="tipo_reporte" tabindex="3" required>
+                            <option value="" disabled selected>Selecciona</option> <!-- Muestra "Selecciona" como placeholder -->
+                        </select>
+                    </div>      
+                    <script>
+                        document.addEventListener('DOMContentLoaded', async () => {
+                            try {
+                                const response = await fetch('/tipo_reporte');
+                                if (!response.ok) {
+                                    throw new Error('Error al obtener los tipos de reporte');
+                                }
+                                const tipo_reporteData = await response.json();
+                
+                                const tipo_reporteSelect = document.getElementById('tipo_reporte');
+                                tipo_reporteSelect.innerHTML = '<option value="" disabled selected>Selecciona</option>'; // Mantener la opción "Selecciona"
+                                
+                                if (tipo_reporteData.length > 0) {
+                                    tipo_reporteData.forEach(tipo_reporte => {
+                                        const option = document.createElement('option');
+                                        option.value = tipo_reporte.id_tipo_reporte; // Guardar el id_tipo_reporte como valor
+                                        option.textContent = tipo_reporte.nombre; // Mostrar el nombre
+                                        tipo_reporteSelect.appendChild(option);
+                                    });
+                                } else {
+                                    const option = document.createElement('option');
+                                    option.value = '';
+                                    option.textContent = 'No hay tipos de reporte disponibles';
+                                    tipo_reporteSelect.appendChild(option);
+                                }
+                            } catch (error) {
+                                console.error('Error:', error);
+                                const tipo_reporteSelect = document.getElementById('tipo_reporte');
+                                tipo_reporteSelect.innerHTML = '<option value="" disabled selected>Selecciona</option>'; // Mantener la opción "Selecciona"
+                                const option = document.createElement('option');
+                                option.value = '';
+                                option.textContent = 'Error al cargar los tipos de reporte';
+                                tipo_reporteSelect.appendChild(option);
+                            }
+                        });
+                
+                        // Validación antes de enviar el formulario
+                        document.querySelector('form').addEventListener('submit', function(event) {
+                            const tipo_reporteSelect = document.getElementById('tipo_reporte');
+                            if (tipo_reporteSelect.value === "") {
+                                event.preventDefault(); // Evitar que se envíe el formulario
+                                alert("Por favor, selecciona un Tipo Reporte."); // Mostrar un mensaje de alerta
+                            }
+                        });
+                    </script> 
+                </div>                                           
             </div>            
             <div class="row">
                 <div class="col-md-2">
                     <div class="mb-3">
-                        <label for="tipo_reporte" class="form-label">FRECUENCIA</label>
-                        <!-- <input type="text" class="form-control" id="tipo_reporte" name="tipo_reporte" tabindex="4">  -->
-                        <select class="custom-select rounded-0" style="width: 100%;"  id="frecuencia" name="frecuencia" tabindex="4">
-                            <option selected="selected">Diario</option>
-                            <option>Semanal</option> 
-                            <option>Quincenal</option>                            
-                            <option>Mes</option>                                                       
-                        </select>               
-                    </div>                   
-                </div>                
+                        <label for="frecuencia" class="form-label">FRECUENCIA</label>
+                        <select class="custom-select rounded-0" style="width: 100%;" id="frecuencia" name="frecuencia" tabindex="4" required>
+                            <option value="" disabled selected>Selecciona</option> <!-- Muestra "Selecciona" como placeholder -->
+                        </select>
+                    </div>               
+                
+                    <script>
+                        document.addEventListener('DOMContentLoaded', async () => {
+                            try {
+                                const response = await fetch('/frecuencia');
+                                if (!response.ok) {
+                                    throw new Error('Error al obtener las frecuencias');
+                                }
+                                const frecuenciaData = await response.json();
+                
+                                const frecuenciaSelect = document.getElementById('frecuencia');
+                                frecuenciaSelect.innerHTML = '<option value="" disabled selected>Selecciona</option>'; // Mantener la opción "Selecciona"
+                                
+                                if (frecuenciaData.length > 0) {
+                                    frecuenciaData.forEach(frecuencia => {
+                                        const option = document.createElement('option');
+                                        option.value = frecuencia.id_frecuencia; // Guardar el id_frecuencia como valor
+                                        option.textContent = frecuencia.nombre; // Mostrar el nombre
+                                        frecuenciaSelect.appendChild(option);
+                                    });
+                                } else {
+                                    const option = document.createElement('option');
+                                    option.value = '';
+                                    option.textContent = 'No hay frecuencias disponibles';
+                                    frecuenciaSelect.appendChild(option);
+                                }
+                            } catch (error) {
+                                console.error('Error:', error);
+                                const frecuenciaSelect = document.getElementById('frecuencia');
+                                frecuenciaSelect.innerHTML = '<option value="" disabled selected>Selecciona</option>'; // Mantener la opción "Selecciona"
+                                const option = document.createElement('option');
+                                option.value = '';
+                                option.textContent = 'Error al cargar las frecuencias';
+                                frecuenciaSelect.appendChild(option);
+                            }
+                        });
+                
+                        // Validación antes de enviar el formulario
+                        document.querySelector('form').addEventListener('submit', function(event) {
+                            const frecuenciaSelect = document.getElementById('frecuencia');
+                            if (frecuenciaSelect.value === "") {
+                                event.preventDefault(); // Evitar que se envíe el formulario
+                                alert("Por favor, selecciona una Frecuencia."); // Mostrar un mensaje de alerta
+                            }
+                        });
+                    </script> 
+                </div>                                
                 <div class="col-md-2">
                     <div class="mb-3">
                         <label for="tipo_reporte" class="form-label">REPOSITORIO</label>                        
-                        <select class="custom-select rounded-0" style="width: 100%;"  id="repositorio" name="repositorio" tabindex="5">
-                            <option selected="selected">FTP</option>
-                            <option>Power BI</option>                            
-                            <option>Tableau</option>
-                            <option>Otro</option>                            
-                        </select>               
-                    </div>                                        
+                        <select class="custom-select rounded-0" style="width: 100%;"  id="repositorio" name="repositorio" tabindex="5" required>
+                            <option value="" disabled selected>Selecciona</option> <!-- Muestra "Selecciona" como placeholder -->
+                        </select>
+                    </div>               
+                
+                    <script>
+                        document.addEventListener('DOMContentLoaded', async () => {
+                            try {
+                                const response = await fetch('/repositorio');
+                                if (!response.ok) {
+                                    throw new Error('Error al obtener las repositorios');
+                                }
+                                const repositorioData = await response.json();
+                
+                                const repositorioSelect = document.getElementById('repositorio');
+                                repositorioSelect.innerHTML = '<option value="" disabled selected>Selecciona</option>'; // Mantener la opción "Selecciona"
+                                
+                                if (repositorioData.length > 0) {
+                                    repositorioData.forEach(repositorio => {
+                                        const option = document.createElement('option');
+                                        option.value = repositorio.id_repositorio; // Guardar el id_repositorio como valor
+                                        option.textContent = repositorio.nombre; // Mostrar el nombre
+                                        repositorioSelect.appendChild(option);
+                                    });
+                                } else {
+                                    const option = document.createElement('option');
+                                    option.value = '';
+                                    option.textContent = 'No hay repositorios disponibles';
+                                    repositorioSelect.appendChild(option);
+                                }
+                            } catch (error) {
+                                console.error('Error:', error);
+                                const repositorioSelect = document.getElementById('repositorio');
+                                repositorioSelect.innerHTML = '<option value="" disabled selected>Selecciona</option>'; // Mantener la opción "Selecciona"
+                                const option = document.createElement('option');
+                                option.value = '';
+                                option.textContent = 'Error al cargar las repositorios';
+                                repositorioSelect.appendChild(option);
+                            }
+                        });
+                
+                        // Validación antes de enviar el formulario
+                        document.querySelector('form').addEventListener('submit', function(event) {
+                            const repositorioSelect = document.getElementById('repositorio');
+                            if (repositorioSelect.value === "") {
+                                event.preventDefault(); // Evitar que se envíe el formulario
+                                alert("Por favor, selecciona una repositorio."); // Mostrar un mensaje de alerta
+                            }
+                        });
+                    </script>                                        
                 </div>
                 <div class="col-md-8">
                     <div class="mb-3">
@@ -86,25 +209,110 @@
                 <div class="col-md-4">
                     <div class="mb-3">
                         <label for="area" class="form-select">AREA</label>
-                        <select class="custom-select rounded-0" id="area" name="area" class="form-select" tabindex="7">
-                          <option value="7" selected>GERENCIA GENERAL</option>
-                          <option value="6">FINANZAS</option>
-                          <option value="5">TECNOLOGIA DE LA INFORMACION</option>
-                          <option value="4">RED & OPERACIONES</option>
-                          <option value="3">SERVICIOS ADMINISTRATIVOS - ASUNTOS CORPORATIVOS</option>
-                          <option value="8">SERVICIOS ADMINISTRATIVOS</option>
-                          <option value="9">MERCADEO Y VENTAS</option>
+                        <select class="custom-select rounded-0" id="area" name="area" class="form-select" tabindex="7" required>
+                            <option value="" disabled selected>Selecciona</option> <!-- Muestra "Selecciona" como placeholder -->
                         </select>
-                      </div>
-                </div>
+                    </div>               
+                
+                    <script>
+                        document.addEventListener('DOMContentLoaded', async () => {
+                            try {
+                                const response = await fetch('/area');
+                                if (!response.ok) {
+                                    throw new Error('Error al obtener las areas');
+                                }
+                                const areaData = await response.json();
+                
+                                const areaSelect = document.getElementById('area');
+                                areaSelect.innerHTML = '<option value="" disabled selected>Selecciona</option>'; // Mantener la opción "Selecciona"
+                                
+                                if (areaData.length > 0) {
+                                    areaData.forEach(area => {
+                                        const option = document.createElement('option');
+                                        option.value = area.id_area; // Guardar el id_area como valor
+                                        option.textContent = area.nombre; // Mostrar el nombre
+                                        areaSelect.appendChild(option);
+                                    });
+                                } else {
+                                    const option = document.createElement('option');
+                                    option.value = '';
+                                    option.textContent = 'No hay areas disponibles';
+                                    areaSelect.appendChild(option);
+                                }
+                            } catch (error) {
+                                console.error('Error:', error);
+                                const areaSelect = document.getElementById('area');
+                                areaSelect.innerHTML = '<option value="" disabled selected>Selecciona</option>'; // Mantener la opción "Selecciona"
+                                const option = document.createElement('option');
+                                option.value = '';
+                                option.textContent = 'Error al cargar las areas';
+                                areaSelect.appendChild(option);
+                            }
+                        });
+                
+                        // Validación antes de enviar el formulario
+                        document.querySelector('form').addEventListener('submit', function(event) {
+                            const areaSelect = document.getElementById('area');
+                            if (areaSelect.value === "") {
+                                event.preventDefault(); // Evitar que se envíe el formulario
+                                alert("Por favor, selecciona una area."); // Mostrar un mensaje de alerta
+                            }
+                        });
+                    </script> 
+                </div>                                
                 <div class="col-md-2">
                     <div class="mb-3">
                         <label for="producto" class="form-select">PRODUCTO</label>
-                        <select class="custom-select rounded-0" id="producto" name="producto" class="form-select" tabindex="8">
-                          <option value="Prepago" selected>Prepago</option>
-                          <option value="Postpago">Postpago</option>
+                        <select class="custom-select rounded-0" id="producto" name="producto" class="form-select" tabindex="8" required>
+                            <option value="" disabled selected>Selecciona</option> <!-- Muestra "Selecciona" como placeholder -->
                         </select>
-                    </div>
+                    </div>               
+                
+                    <script>
+                        document.addEventListener('DOMContentLoaded', async () => {
+                            try {
+                                const response = await fetch('/producto');
+                                if (!response.ok) {
+                                    throw new Error('Error al obtener las productos');
+                                }
+                                const productoData = await response.json();
+                
+                                const productoSelect = document.getElementById('producto');
+                                productoSelect.innerHTML = '<option value="" disabled selected>Selecciona</option>'; // Mantener la opción "Selecciona"
+                                
+                                if (productoData.length > 0) {
+                                    productoData.forEach(producto => {
+                                        const option = document.createElement('option');
+                                        option.value = producto.id_producto; // Guardar el id_producto como valor
+                                        option.textContent = producto.nombre; // Mostrar el nombre
+                                        productoSelect.appendChild(option);
+                                    });
+                                } else {
+                                    const option = document.createElement('option');
+                                    option.value = '';
+                                    option.textContent = 'No hay productos disponibles';
+                                    productoSelect.appendChild(option);
+                                }
+                            } catch (error) {
+                                console.error('Error:', error);
+                                const productoSelect = document.getElementById('producto');
+                                productoSelect.innerHTML = '<option value="" disabled selected>Selecciona</option>'; // Mantener la opción "Selecciona"
+                                const option = document.createElement('option');
+                                option.value = '';
+                                option.textContent = 'Error al cargar las productos';
+                                productoSelect.appendChild(option);
+                            }
+                        });
+                
+                        // Validación antes de enviar el formulario
+                        document.querySelector('form').addEventListener('submit', function(event) {
+                            const productoSelect = document.getElementById('producto');
+                            if (productoSelect.value === "") {
+                                event.preventDefault(); // Evitar que se envíe el formulario
+                                alert("Por favor, selecciona una producto."); // Mostrar un mensaje de alerta
+                            }
+                        });
+                    </script> 
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
@@ -116,9 +324,69 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="mb-3">
+                        <label for="fuente" class="form-label">FUENTE</label>
+                        <input type="text" class="form-control" id="fuente" name="fuente" tabindex="10" required>
+                    </div>                   
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="nivel_informacion" class="form-select">NIVEL INFORMACION</label>
+                        <select class="custom-select rounded-0" id="nivel_informacion" name="nivel_informacion" class="form-select" tabindex="11" required>
+                            <option value="" disabled selected>Selecciona</option> <!-- Muestra "Selecciona" como placeholder -->
+                        </select>
+                    </div>               
+                
+                    <script>
+                        document.addEventListener('DOMContentLoaded', async () => {
+                            try {
+                                const response = await fetch('/nivel_informacion');
+                                if (!response.ok) {
+                                    throw new Error('Error al obtener las nivel_informacions');
+                                }
+                                const nivel_informacionData = await response.json();
+                
+                                const nivel_informacionSelect = document.getElementById('nivel_informacion');
+                                nivel_informacionSelect.innerHTML = '<option value="" disabled selected>Selecciona</option>'; // Mantener la opción "Selecciona"
+                                
+                                if (nivel_informacionData.length > 0) {
+                                    nivel_informacionData.forEach(nivel_informacion => {
+                                        const option = document.createElement('option');
+                                        option.value = nivel_informacion.id_nivel_informacion; // Guardar el id_nivel_informacion como valor
+                                        option.textContent = nivel_informacion.nombre; // Mostrar el nombre
+                                        nivel_informacionSelect.appendChild(option);
+                                    });
+                                } else {
+                                    const option = document.createElement('option');
+                                    option.value = '';
+                                    option.textContent = 'No hay nivel_informacions disponibles';
+                                    nivel_informacionSelect.appendChild(option);
+                                }
+                            } catch (error) {
+                                console.error('Error:', error);
+                                const nivel_informacionSelect = document.getElementById('nivel_informacion');
+                                nivel_informacionSelect.innerHTML = '<option value="" disabled selected>Selecciona</option>'; // Mantener la opción "Selecciona"
+                                const option = document.createElement('option');
+                                option.value = '';
+                                option.textContent = 'Error al cargar las nivel_informacions';
+                                nivel_informacionSelect.appendChild(option);
+                            }
+                        });
+                
+                        // Validación antes de enviar el formulario
+                        document.querySelector('form').addEventListener('submit', function(event) {
+                            const nivel_informacionSelect = document.getElementById('nivel_informacion');
+                            if (nivel_informacionSelect.value === "") {
+                                event.preventDefault(); // Evitar que se envíe el formulario
+                                alert("Por favor, selecciona una nivel_informacion."); // Mostrar un mensaje de alerta
+                            }
+                        });
+                    </script>                      
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
                         <label for="hora_ejecucion" class="form-label">HORA EJECUCION</label>
                         <div class="d-flex">
-                            <select class="custom-select rounded-0" id="hora_ejecucion_hora" name="hora_ejecucion_hora" tabindex="9">
+                            <select class="custom-select rounded-0" id="hora_ejecucion_hora" name="hora_ejecucion_hora" tabindex="12">
                                 <!-- Opciones para horas -->
                                 <option value="">Hora</option>
                                 <% for (let i = 0; i < 24; i++) { %>
@@ -126,7 +394,7 @@
                                 <% } %>
                             </select>
                             <span class="mx-2">:</span>
-                            <select class="custom-select rounded-0" id="hora_ejecucion_minuto" name="hora_ejecucion_minuto" tabindex="10">
+                            <select class="custom-select rounded-0" id="hora_ejecucion_minuto" name="hora_ejecucion_minuto" tabindex="13">
                                 <!-- Opciones para minutos -->
                                 <option value="">Minuto</option>
                                 <% for (let i = 0; i < 60; i++) { %>
@@ -134,7 +402,7 @@
                                 <% } %>
                             </select>
                             <span class="mx-2">:</span>
-                            <select class="custom-select rounded-0" id="hora_ejecucion_segundo" name="hora_ejecucion_segundo" tabindex="11">
+                            <select class="custom-select rounded-0" id="hora_ejecucion_segundo" name="hora_ejecucion_segundo" tabindex="14">
                                 <!-- Opciones para segundos -->
                                 <option value="">Segundo</option>
                                 <% for (let i = 0; i < 60; i++) { %>
@@ -143,22 +411,26 @@
                             </select>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-4">
-                    
-                </div>
-            </div>
+                </div>                
+            </div>  
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-sm-6">
+                    <!-- textarea -->
+                    <div class="form-group">
+                        <label for="descripcion">DESCRIPCION</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3"  tabindex="15" required></textarea>
+                    </div>
+                </div>
+                <div class="col-sm-6">
                     <div class="mb-3">
                         <label for="usuario" class="form-select">REGISTRADO POR</label>
                         <select class="custom-select rounded-0"  id="usuario" name="usuario" class="form-select">
                           <option value="<%= userName %>" selected><%= userName %></option>                          
                         </select>
-                    </div>                    
+                    </div>  
                 </div>
-            </div>                         
-            <button type="submit" class="btn btn-primary" tabindex="12">GUARDAR</button>
+            </div>                                                                 
+            <button type="submit" class="btn btn-primary" tabindex="16">GUARDAR</button>
             <a href="/inventarioReportes" class="btn btn-secondary">CANCELAR</a>
           </form>            
         </div><!-- /.card-body -->

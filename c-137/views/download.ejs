@@ -17,7 +17,7 @@
           <table id="example1" class="table table-striped mt-4 table-responsive">
             <thead class="table-dark">
               <tr>
-                <th scope="col">#ID</th>
+                <th scope="col">#</th>
                 <th scope="col">REPORTE</th>
                 <th scope="col">ESTADO</th>
                 <th scope="col">FECHA ACTUALIZACION</th>
@@ -27,31 +27,35 @@
             </thead>
             
             <tbody>
+              <% let count = 1; %> <!-- Definir la variable count aquí -->
               <% results.forEach((user) => { %>
                 <tr>
-                  <td><%= user.id %></td>
+                  <td><%= count++ %></td>
+                  <!-- <td><%= user.id %></td> -->
                   <td><%= user.reporte %></td>
-                  <td class="text-center">
-                    <span class="badge <%= user.isToday ? 'bg-success' : 'bg-danger' %>">
-                      <%= user.isToday ? 'OK' : 'NOOK' %>
-                    </span>
-                  </td>
-                  <td><%= user.mtime %></td>
-                  
+
+                  <% if (user.tipo_acceso === 'descarga') { %>
+                    <td class="text-center">
+                      <span class="badge <%= user.isToday ? 'bg-success' : 'bg-danger' %>">
+                        <%= user.isToday ? 'OK' : 'NOOK' %>
+                      </span>
+                    </td>
+                    <td><%= user.mtime %></td>                    
+                  <% } else { %>
+                    <td class="text-center">-</td>
+                    <td class="text-center">-</td>                    
+                  <% } %>
+
                   <td>
                     <% if (user.tipo_acceso === 'descarga') { %>
-                      <a href="/download_file?id=<%= user.reporte %>&ftp=<%= encodeURIComponent(user.direccion_ftp) %>" class="btn btn-primary">DESCARGAR</a>
+                      <a href="/download_file?id=<%= user.reporte %>&ftp=<%= encodeURIComponent(user.direccion_ftp) %>" class="btn btn-primary"><i class="fas fa-cloud-download-alt" data-toggle="tooltip" title="LINK DE DESCARGA"></i></a>
                     <% } else { %>
                       <!--<a href="/link?id=<%= user.reporte %>" class="btn btn-primary" target="_blank">LINK</a>
                       <a href="javascript:void(0);" onclick="openPopup('/popup-content?id=<%= user.reporte %>')" class="btn btn-primary"></a>-->
-                      <a href="javascript:void(0);" onclick="openPopup('/popup-content?id=<%= user.direccion_ftp %>')" class="btn btn-primary">ABRIR LINK</a>
-
-
+                      <a href="javascript:void(0);" onclick="openPopup('/popup-content?id=<%= user.direccion_ftp %>')" class="btn btn-primary"><i class="fa-solid fa-link" data-toggle="tooltip" title="LINK DE DESCARGA"></i></a>
 
                     <% } %>
                   </td>
- 
-                
                 <script>
                     function openPopup(url) {
                         const popup = window.open('', 'popupWindow', 'width=9000,height=9000,scrollbars=no,toolbar=no,menubar=no,location=no,status=no');
@@ -87,22 +91,8 @@
                         `);
                         popup.document.close();
                     }
-                </script>
-                
-                
-                
-
-
-
-
-
-
-
+                </script>   
                 </td>
-
-
-
-
                 </tr> 
               <% }) %>             
             </tbody>
