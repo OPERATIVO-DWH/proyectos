@@ -1,3 +1,4 @@
+<!-- cambio 07-10-2024 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,12 +54,16 @@
           <div class="card-body">
             <!-- Casillas de verificación -->
             <div class="form-group">
-              <h>Selecciona la frecuencia:</h>
-              <label><input type="radio" name="frecuencia" id="checkDia" value="dia"> Día</label>
-              <label><input type="radio" name="frecuencia" id="checkSemana" value="semana"> Semana</label>
-              <label><input type="radio" name="frecuencia" id="checkMes" value="mes"> Mes</label>
+                       
             </div>
             <form id="consultaForm" class="mb-4">
+              <h>Datos requeridos:</h>
+                  <label for="fecha_inicio">Fecha Inicio:</label>
+                  <input type="date" id="fecha_inicio" name="fecha_inicio" required>
+         
+                  <label for="fecha_fin">Fecha Fin:</label>
+                  <input type="date" id="fecha_fin" name="fecha_fin" required>  
+                 
               <div class="form-group">
                 <textarea id="pregunta" class="textarea-custom" rows="4" placeholder="Introduce tu pregunta aquí..." required></textarea>
               </div>
@@ -73,7 +78,7 @@
       </div>
     </div>
   </div>
-
+ 
   <!-- Modal para mostrar resultados en tabla -->
   <div class="modal fade" id="resultadosModal" tabindex="-1" role="dialog" aria-labelledby="resultadosModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
@@ -94,17 +99,17 @@
       </div>
     </div>
   </div>
-
+ 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
   <script>
       function descargarExcel() {
           const resultados = JSON.parse(document.getElementById('consultaSql').textContent);
-  
+ 
           if (resultados && Array.isArray(resultados.resultados) && resultados.resultados.length > 0) {
               const ws = XLSX.utils.json_to_sheet(resultados.resultados);
               const wb = XLSX.utils.book_new();
               XLSX.utils.book_append_sheet(wb, ws, "Resultados");
-  
+ 
               // Generar archivo Excel y descargarlo
               XLSX.writeFile(wb, 'resultados_consulta.xlsx');
           } else {
@@ -112,19 +117,19 @@
           }
       }
   </script>
-
+ 
   <!-- JavaScript -->
   <script>
     document.getElementById('consultaForm').addEventListener('submit', function(e) {
         e.preventDefault();
-
+ 
         const pregunta = document.getElementById('pregunta').value;
         const btnEnviar = document.getElementById('btnEnviar');
-
+ 
         // Desactivar el botón al enviar la consulta
         btnEnviar.disabled = true;
         btnEnviar.textContent = 'Enviando Consulta...'; // Cambia el texto del botón mientras se procesa
-
+ 
         fetch('/consulta', {
             method: 'POST',
             headers: {
@@ -145,7 +150,7 @@
             } else {
                 document.getElementById('tablaResultados').innerHTML = '<p>No se encontraron resultados.</p>';
             }
-
+ 
             // Volver a activar el botón y restaurar el texto
             btnEnviar.disabled = false;
             btnEnviar.textContent = 'Enviar Consulta';
@@ -153,51 +158,51 @@
         .catch(error => {
             console.error('Error:', error);
             document.getElementById('tablaResultados').innerHTML = '<p class="error">Hubo un error al procesar la consulta.</p>';
-            
+           
             // Volver a activar el botón incluso si hay un error
             btnEnviar.disabled = false;
             btnEnviar.textContent = 'Enviar Consulta';
         });
     });
-
+ 
     function generarTabla(datos) {
         const tablaResultados = document.getElementById('tablaResultados');
         tablaResultados.innerHTML = ''; // Limpiar la tabla anterior
-
+ 
         const tabla = document.createElement('table');
         tabla.classList.add('table', 'table-striped', 'table-bordered');
-
+ 
         // Crear encabezado de la tabla
         const thead = document.createElement('thead');
         const filaEncabezado = document.createElement('tr');
-
+ 
         // Añadir una columna "Número"
         const thNumero = document.createElement('th');
         thNumero.textContent = 'Número';
         filaEncabezado.appendChild(thNumero);
-
+ 
         // Obtener dinámicamente los nombres de las columnas de los datos
         const columnas = Object.keys(datos[0]); // Los nombres de las columnas que vienen del select
-
+ 
         columnas.forEach(columna => {
             const th = document.createElement('th');
             th.textContent = columna; // Usar el nombre de la columna proporcionado por el select
             filaEncabezado.appendChild(th);
         });
-
+ 
         thead.appendChild(filaEncabezado);
         tabla.appendChild(thead);
-
+ 
         // Crear cuerpo de la tabla
         const tbody = document.createElement('tbody');
         datos.forEach((fila, index) => {
             const tr = document.createElement('tr');
-
+ 
             // Añadir la columna con el número de la fila
             const tdNumero = document.createElement('td');
             tdNumero.textContent = index + 1;
             tr.appendChild(tdNumero);
-
+ 
             columnas.forEach(columna => {
                 const td = document.createElement('td');
                 td.textContent = fila[columna]; // Agregar los valores de cada columna
@@ -205,12 +210,12 @@
             });
             tbody.appendChild(tr);
         });
-
+ 
         tabla.appendChild(tbody);
         tablaResultados.appendChild(tabla);
     }
   </script>
-
+ 
   <!-- jQuery -->
   <script src="/static/public/js/jquery.min.js"></script>
   <!-- Bootstrap 4 -->
