@@ -207,7 +207,6 @@
             </div>   
             <div class="row">
                 <div class="col-md-4">
-<<<<<<< HEAD
                
                     
 
@@ -268,61 +267,6 @@
 
 
                 </div>
-=======
-                    <div class="mb-3">
-                        <label for="area" class="form-select">AREA</label>
-                        <select class="custom-select rounded-0" id="area" name="area" class="form-select" tabindex="7" required>
-                            <option value="" disabled selected>Selecciona</option> <!-- Muestra "Selecciona" como placeholder -->
-                        </select>
-                    </div>               
-                
-                    <script>
-                        document.addEventListener('DOMContentLoaded', async () => {
-                            try {
-                                const response = await fetch('/area');
-                                if (!response.ok) {
-                                    throw new Error('Error al obtener las areas');
-                                }
-                                const areaData = await response.json();
-                
-                                const areaSelect = document.getElementById('area');
-                                areaSelect.innerHTML = '<option value="" disabled selected>Selecciona</option>'; // Mantener la opción "Selecciona"
-                                
-                                if (areaData.length > 0) {
-                                    areaData.forEach(area => {
-                                        const option = document.createElement('option');
-                                        option.value = area.id_area; // Guardar el id_area como valor
-                                        option.textContent = area.nombre; // Mostrar el nombre
-                                        areaSelect.appendChild(option);
-                                    });
-                                } else {
-                                    const option = document.createElement('option');
-                                    option.value = '';
-                                    option.textContent = 'No hay areas disponibles';
-                                    areaSelect.appendChild(option);
-                                }
-                            } catch (error) {
-                                console.error('Error:', error);
-                                const areaSelect = document.getElementById('area');
-                                areaSelect.innerHTML = '<option value="" disabled selected>Selecciona</option>'; // Mantener la opción "Selecciona"
-                                const option = document.createElement('option');
-                                option.value = '';
-                                option.textContent = 'Error al cargar las areas';
-                                areaSelect.appendChild(option);
-                            }
-                        });
-                
-                        // Validación antes de enviar el formulario
-                        document.querySelector('form').addEventListener('submit', function(event) {
-                            const areaSelect = document.getElementById('area');
-                            if (areaSelect.value === "") {
-                                event.preventDefault(); // Evitar que se envíe el formulario
-                                alert("Por favor, selecciona una area."); // Mostrar un mensaje de alerta
-                            }
-                        });
-                    </script> 
-                </div>                                
->>>>>>> 0e3b5ef78f780bf362a3deb438739af938488c5b
                 <div class="col-md-2">
                     <div class="mb-3">
                         <label for="producto" class="form-select">PRODUCTO</label>

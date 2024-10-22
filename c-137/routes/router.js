@@ -59,7 +59,7 @@ router.get('/users', authControllers.isAuthenticate,(req, res)=> {
 // para direccionar a create.ejs
 router.get('/createUser', authControllers.isAuthenticate,(req, res) => {
     if(req.user.rol=="Admin") {
-        res.render('createUser')
+        res.render('createUser', { userName: req.user.email, userRol: req.user.rol,user1: req.user })
     } else {
         res.render('index', { userName: req.user.email, userRol: req.user.rol,user1: req.user });
     }       
@@ -1285,7 +1285,7 @@ router.get('/accesoReportes', authControllers.isAuthenticate, (req, res) => {
 
         // Proceso adicional si es necesario (como calcular mtime o estados)
 
-        res.render('accesoReportes', { results, userName: req.user.email, userRol: req.user.rol,user: req.user });
+        res.render('accesoReportes', { results, userName: req.user.email, userRol: req.user.rol,user: req.user, user1: req.user });
     });
 });
 
